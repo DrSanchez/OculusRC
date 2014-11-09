@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("ScreenWidth", screenWidth);
     engine.rootContext()->setContextProperty("ScreenHeight", screenHeight);
-
+    engine.rootContext()->setContextProperty("ShowFullscreen", showFullscreen);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     return app.exec();

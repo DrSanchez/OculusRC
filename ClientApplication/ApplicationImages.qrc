@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>ItemConnected.png</file>
+        <file>ItemDisconnected.png</file>
+        <file>dk2.png</file>
+        <file>tk1.png</file>
+        <file>wheel1.jpg</file>
+    </qresource>
+</RCC>

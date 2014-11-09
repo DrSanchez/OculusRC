@@ -7,7 +7,8 @@ SOURCES += main.cpp \
     controllermanager.cpp \
     xinputcontrolstate.cpp
 
-RESOURCES += qml.qrc
+RESOURCES += qml.qrc \
+    ApplicationImages.qrc
 
 # Add C++ 11 support
 CONFIG   += c++11 (Qt5)
