@@ -42,7 +42,7 @@ Rectangle
         SpringAnimation
         {
             alwaysRunToEnd:  true
-            duration: 400
+            duration: 300
             spring: 1;
             damping: .18
         }

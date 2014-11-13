@@ -52,12 +52,52 @@ FocusScope
             height: parent.height
             anchors.fill: parent
             anchors.centerIn: parent
-//            color: clientTheme.mainBackground
             gradient: Gradient
             {
                 GradientStop { position: 0.0; color: "#0d353d" }
                 GradientStop { position: 0.3; color: "#0c343d" }
                 GradientStop { position: 0.6; color: "#0b2e35" }
+            }
+
+            Rectangle
+            {
+                id: backgroundUnderlay
+                height: parent.height
+                width: parent.width * 0.9
+                radius: 300
+                gradient: Gradient
+                {
+                    GradientStop { position: 0.2; color: "dark gray" }
+                    GradientStop { position: 0.8; color: "gray" }
+                }
+                anchors.right: parent.right
+                anchors.rightMargin: parent.width * 0.05
+
+                Text
+                {
+                    id: applicationTitleText
+                    font.pixelSize: parent.height * 0.15
+                    text: "OculusRC"
+                    font.underline: true
+                    font.italic: true
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.topMargin: parent.height * 0.008
+                    anchors.leftMargin: parent.width * 0.075
+                }
+
+                Rectangle
+                {
+                    height: parent.height
+                    width: parent.width / 2
+                    anchors.left: parent.right
+                    anchors.leftMargin: -(parent.width * 0.25)
+                    gradient: Gradient
+                    {
+                        GradientStop { position: 0.2; color: "dark gray" }
+                        GradientStop { position: 0.8; color: "gray" }
+                    }
+                }
             }
 
             Rectangle
@@ -71,7 +111,7 @@ FocusScope
                 width: parent.height * 1.3
                 rotation: 90
                 radius: 500
-                opacity: 0.85
+                opacity: 0.9
                 border.width: 2
                 border.color: "black"
                 gradient: Gradient
@@ -217,7 +257,7 @@ FocusScope
                 id: bevelOuter
                 width: parent.height * 0.65
                 height: parent.width * 0.5
-                x: parent.width * 0.1
+                x: parent.width * 0.15
                 anchors.verticalCenter: parent.verticalCenter
                 rotation: -90
                 gradient: Gradient
@@ -257,23 +297,34 @@ FocusScope
                         id: connectionItemContainer
                         height: parent.height
                         width: parent.width
-                        anchors.centerIn: parent
+                        anchors.top: parent.top
+                        anchors.topMargin: parent.height * 0.05
+                        anchors.left: parent.left
+                        anchors.leftMargin: parent.width * 0.05
+                        spacing: parent.height * 0.05
 
                         ItemConnectionIndicator
                         {
-                            id: testItem
-                            anchors.top: parent.top
-                            anchors.topMargin: testItem.height * 0.2
-                            anchors.left: parent.left
-                            anchors.leftMargin: testItem.width * 0.15
+                            id: testItem1
+                            hardwareDescriptor: 1
+                            connected: true
+                        }
+                        ItemConnectionIndicator
+                        {
+                            id: testItem2
+                            hardwareDescriptor: 2
+                            connected: true
+                        }
+                        ItemConnectionIndicator
+                        {
+                            id: testItem3
+                            hardwareDescriptor: 3
+                            connected: false
                         }
                     }
                 }
             }
 
         }
-
-
     }
-
 }
