@@ -10,6 +10,8 @@ Rectangle
     property int hardwareDescriptor: 1
     property bool connected: false
 
+    signal deviceConnected ()
+
     Rectangle
     {
         id: statusContainer

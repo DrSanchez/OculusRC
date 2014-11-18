@@ -70,6 +70,7 @@ FocusScope
                     GradientStop { position: 0.2; color: "dark gray" }
                     GradientStop { position: 0.8; color: "gray" }
                 }
+                opacity: 0.8
                 anchors.right: parent.right
                 anchors.rightMargin: parent.width * 0.05
 
@@ -92,6 +93,7 @@ FocusScope
                     width: parent.width / 2
                     anchors.left: parent.right
                     anchors.leftMargin: -(parent.width * 0.25)
+                    opacity: 0.95
                     gradient: Gradient
                     {
                         GradientStop { position: 0.2; color: "dark gray" }
@@ -154,6 +156,29 @@ FocusScope
                     else if (buttons.buttonFocus == 0)
                     {
                         //do other movement
+                    }
+                }
+                else if (event.key == Qt.Key_Left)
+                {
+                    if (buttons.buttonFocus == 1)
+                    {//move off of button column
+                        buttons.buttonFocus = 0;
+                    }
+                    else if (buttons.buttonFocus == 0)
+                    {//move on to button column
+                        buttons.buttonFocus = 1;
+                    }
+                }
+                else if (event.key == Qt.Key_Right)
+                {
+                    if (buttons.buttonFocus == 1)
+                    {//move off of button column
+                        buttons.buttonFocus = 0;
+                    }
+                    else if (buttons.buttonFocus == 0)
+                    {//move on to button column
+                        buttons.buttonFocus = 1;
+
                     }
                 }
             }
@@ -305,26 +330,35 @@ FocusScope
 
                         ItemConnectionIndicator
                         {
-                            id: testItem1
+                            id: serverItem
                             hardwareDescriptor: 1
                             connected: true
                         }
                         ItemConnectionIndicator
                         {
-                            id: testItem2
+                            id: oculusItem
                             hardwareDescriptor: 2
                             connected: true
                         }
                         ItemConnectionIndicator
                         {
-                            id: testItem3
+                            id: controllerItem
                             hardwareDescriptor: 3
                             connected: false
                         }
                     }
                 }
-            }
 
+            }
+        }
+        ExitButton
+        {
+            id: exitButton
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: parent.height * 0.03
+            anchors.left: parent.left
+            anchors.leftMargin: parent.width * 0.25
+            z: parent.z + 1
         }
     }
 }

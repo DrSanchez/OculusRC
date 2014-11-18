@@ -4,6 +4,6 @@
         <file>SelectorButton.qml</file>
         <file>ColorTheme.qml</file>
         <file>ItemConnectionIndicator.qml</file>
-        <file>FreeButton.qml</file>
+        <file>ExitButton.qml</file>
     </qresource>
 </RCC>
