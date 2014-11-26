@@ -14,7 +14,7 @@ class SteeringWheelController : public QObject
     Q_OBJECT
 
 public:
-    explicit SteeringWheelController(unsigned int controllerNumber, unsigned int leftStickDeadZone, unsigned int rightStickDeadZone, unsigned int triggerThreshold, QObject *parent = 0);
+    explicit SteeringWheelController(unsigned int controllerNumber, unsigned int leftStickDeadZone = XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE, unsigned int rightStickDeadZone = XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE, unsigned int triggerThreshold = XINPUT_GAMEPAD_TRIGGER_THRESHOLD, QObject *parent = 0);
 
 signals:
     void newControllerState(XInputControlState);
@@ -40,7 +40,7 @@ private:
     static bool processTriggerThreshold(quint8 rawValue, float& value,unsigned int triggerThreshold);
 
     //private members
-    int _controllerDesignator;
+    unsigned int _controllerDesignator;
     bool _previousConnectState;
     bool _currentConnectState;
     QTimer * _updateTimer;

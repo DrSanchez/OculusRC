@@ -41,24 +41,33 @@ class ControllerManager : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool connected READ connected WRITE setConnected NOTIFY connectedChanged)
+
 public:
     explicit ControllerManager(QObject *parent = 0);
     ControllerManager(ControllerType controlType, QObject *parent = 0);
 
     void setControllerLayout(QList<QPair<Control, QVariant> > controllerMapping);
     QList<QPair<Control, QVariant> > getControllerLayout() const;
-    bool Connect();
-    bool Disconnect();
+    void Connect();
+    void Disconnect();
+
+    void setConnected(bool connected);
+    bool connected();
 
 signals:
+    void connectedChanged();
 
 public slots:
     void processControllerState(XInputControlState controllerState);
+    //void gamepadConnected();
+    //void gamepadDisconnected();
+    void toggleConnected();
 
 private:
+    SteeringWheelController * _controller;
     bool _connected;
     QList<QPair<Control, QVariant> > _controllerLayout;
-    SteeringWheelController * _controller;
 
 };
 

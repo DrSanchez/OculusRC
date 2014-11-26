@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
 
 Rectangle
 {
@@ -6,6 +7,8 @@ Rectangle
     width: clientMain.width * 0.39
     height: clientMain.height * 0.16
     color: "transparent"
+
+    state: "UNFOCUSED"
 
     property int hardwareDescriptor: 1
     property bool connected: false
@@ -35,6 +38,18 @@ Rectangle
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             anchors.leftMargin: parent.width * 0.03
+
+            function toggleSource()
+            {
+                if (connected)
+                {
+                    connectionImage.source = "qrc:/images/ItemConnected.png"
+                }
+                else if (!connected)
+                {
+                    connectionImage.source = "qrc:/images/ItemDisconnected.png"
+                }
+            }
 
             source:
             {
@@ -84,6 +99,18 @@ Rectangle
             anchors.top: hardwareText.bottom
             anchors.topMargin: hardwareText.height * 0.05
             anchors.horizontalCenter: hardwareText.horizontalCenter
+
+            function toggleText()
+            {
+                if (connected)
+                {
+                    hardwareConnectedText.text = "Connected"
+                }
+                else if (!connected)
+                {
+                    hardwareConnectedText.text = "Disconnected"
+                }
+            }
 
             text:
             {
@@ -136,4 +163,65 @@ Rectangle
             }
         }
     }
+
+    onFocusChanged:
+    {
+        if (focus == true)
+        {
+            connectionContainer.state = "FOCUSED";
+        }
+        else if (focus == false)
+        {
+            connectionContainer.state = "UNFOCUSED"
+        }
+    }
+
+    onConnectedChanged:
+    {
+        connectionImage.toggleSource();
+        hardwareConnectedText.toggleText();
+    }
+
+    RectangularGlow
+    {
+        id: highlightedGlow
+        color: connectionContainer.focus ? "dark red" : "transparent"
+        height: connectionContainer.height
+        width: connectionContainer.width
+        z: connectionContainer.z - 1
+        anchors.centerIn: connectionContainer
+        glowRadius: parent.width / 8
+        visible: connectionContainer.focus
+    }
+
+    states:
+    [
+        State
+        {
+            name: "FOCUSED"
+            PropertyChanges { target: highlightedGlow; color: "dark red" }
+        },
+        State
+        {
+            name: "UNFOCUSED"
+            PropertyChanges { target: highlightedGlow; color: "transparent" }
+        }
+
+    ]
+
+    transitions:
+    [
+        Transition
+        {
+            from: "UNFOCUSED"
+            to: "FOCUSED"
+            ColorAnimation { target: highlightedGlow; duration: 250 }
+        },
+        Transition
+        {
+            from: "FOCUSED"
+            to: "UNFOCUSED"
+            ColorAnimation { target: highlightedGlow; duration: 250 }
+        }
+    ]
 }

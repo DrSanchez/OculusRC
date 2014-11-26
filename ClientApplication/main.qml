@@ -9,6 +9,10 @@ FocusScope
     x: clientMain.x; y: clientMain.y
     width: clientMain.width; height: clientMain.height
 
+    property bool oculusConnectionStatus: false
+    property bool controllerConnectionStatus: ControllerManager.connected
+    property bool serverConnectionStatus: false
+
     Component.onCompleted:
     {//application initialization code
         button1.focus = true;
@@ -129,58 +133,8 @@ FocusScope
 
             Component.onCompleted:
             {
-                buttons.buttonFocus = 1;
-                buttons.index = 1;
                 applicationFocus.focus =  button1;
-            }
-
-            Keys.onPressed:
-            {
-                if (event.key == Qt.Key_Up)
-                {
-                    if (buttons.buttonFocus == 1)
-                    {
-                        buttons.processMove(true);
-                    }
-                    else if (buttons.buttonFocus == 0)
-                    {
-                        //do other movement
-                    }
-                }
-                else if (event.key == Qt.Key_Down)
-                {
-                    if (buttons.buttonFocus == 1)
-                    {
-                        buttons.processMove(false);
-                    }
-                    else if (buttons.buttonFocus == 0)
-                    {
-                        //do other movement
-                    }
-                }
-                else if (event.key == Qt.Key_Left)
-                {
-                    if (buttons.buttonFocus == 1)
-                    {//move off of button column
-                        buttons.buttonFocus = 0;
-                    }
-                    else if (buttons.buttonFocus == 0)
-                    {//move on to button column
-                        buttons.buttonFocus = 1;
-                    }
-                }
-                else if (event.key == Qt.Key_Right)
-                {
-                    if (buttons.buttonFocus == 1)
-                    {//move off of button column
-                        buttons.buttonFocus = 0;
-                    }
-                    else if (buttons.buttonFocus == 0)
-                    {//move on to button column
-                        buttons.buttonFocus = 1;
-
-                    }
-                }
+                button1.focus = true;
             }
 
             Column
@@ -193,66 +147,16 @@ FocusScope
                 anchors.top: parent.top
                 spacing: button1.height * 0.8
 
-                property int index: 1
-                property int buttonFocus: 1
-
-                function processMove(up)
-                {
-                    if (up)
-                    {//up arrow
-                        switch(buttons.index)
-                        {
-                        case 1:
-                            buttons.index = 4;
-                            button4.focus = true;
-                            break;
-                        case 2:
-                            buttons.index = 1;
-                            button1.focus = true;
-                            break;
-                        case 3:
-                            buttons.index = 2;
-                            button2.focus = true;
-                            break;
-                        case 4:
-                            buttons.index = 3;
-                            button3.focus = true;
-                            break;
-                        default:
-                            break;
-                        }
-                    }
-                    else if (!up)
-                    {//down arrow
-                        switch(buttons.index)
-                        {
-                        case 1:
-                            buttons.index = 2;
-                            button2.focus = true;
-                            break;
-                        case 2:
-                            buttons.index = 3;
-                            button3.focus = true;
-                            break;
-                        case 3:
-                            buttons.index = 4;
-                            button4.focus = true;
-                            break;
-                        case 4:
-                            buttons.index = 1;
-                            button1.focus = true;
-                            break;
-                        default:
-                            break;
-                        }
-                    }
-                }
-
                 SelectorButton
                 {
                     id: button1
                     anchors.right: parent.right
                     buttonText: "Drive"
+
+                    KeyNavigation.up: button4;
+                    KeyNavigation.down: button2;
+                    KeyNavigation.left: serverItem;
+                    KeyNavigation.right: serverItem;
                 }
 
                 SelectorButton
@@ -260,6 +164,11 @@ FocusScope
                     id: button2
                     anchors.right: parent.right
                     buttonText: "Calibrate"
+
+                    KeyNavigation.up: button1;
+                    KeyNavigation.down: button3;
+                    KeyNavigation.left: oculusItem;
+                    KeyNavigation.right: oculusItem;
                 }
 
                 SelectorButton
@@ -267,6 +176,11 @@ FocusScope
                     id: button3
                     anchors.right: parent.right
                     buttonText: "Test"
+
+                    KeyNavigation.up: button2;
+                    KeyNavigation.down: button4;
+                    KeyNavigation.left: controllerItem;
+                    KeyNavigation.right: controllerItem;
                 }
 
                 SelectorButton
@@ -274,6 +188,11 @@ FocusScope
                     id: button4
                     anchors.right: parent.right
                     buttonText: "Settings"
+
+                    KeyNavigation.up: button3;
+                    KeyNavigation.down: button1;
+                    KeyNavigation.left: exitButton;
+                    KeyNavigation.right: exitButton;
                 }
             }
 
@@ -332,19 +251,34 @@ FocusScope
                         {
                             id: serverItem
                             hardwareDescriptor: 1
-                            connected: true
+                            connected: serverConnectionStatus
+
+                            KeyNavigation.up: exitButton;
+                            KeyNavigation.down: oculusItem;
+                            KeyNavigation.left: button1;
+                            KeyNavigation.right: button1;
                         }
                         ItemConnectionIndicator
                         {
                             id: oculusItem
                             hardwareDescriptor: 2
-                            connected: true
+                            connected: oculusConnectionStatus
+
+                            KeyNavigation.up: serverItem;
+                            KeyNavigation.down: controllerItem;
+                            KeyNavigation.left: button2;
+                            KeyNavigation.right: button2;
                         }
                         ItemConnectionIndicator
                         {
                             id: controllerItem
                             hardwareDescriptor: 3
-                            connected: false
+                            connected: controllerConnectionStatus
+
+                            KeyNavigation.up: oculusItem;
+                            KeyNavigation.down: exitButton;
+                            KeyNavigation.left: button3;
+                            KeyNavigation.right: button3;
                         }
                     }
                 }
@@ -359,6 +293,31 @@ FocusScope
             anchors.left: parent.left
             anchors.leftMargin: parent.width * 0.25
             z: parent.z + 1
+
+            KeyNavigation.up: controllerItem;
+            KeyNavigation.down: serverItem;
+            KeyNavigation.left: button4;
+            KeyNavigation.right: button4;
+
+            MouseArea
+            {
+                anchors.fill: parent
+                onClicked: exitButton.exit();
+            }
+
+
+            Keys.onPressed:
+            {
+
+                    console.log("FocusScope.Return Key")
+                if (event.key == Qt.Key_Return)
+                {
+                    if (exitButton.activeFocus)
+                    {
+                        exitButton.exit();
+                    }
+                }
+            }
         }
     }
 }

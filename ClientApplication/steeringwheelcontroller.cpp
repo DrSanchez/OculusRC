@@ -12,7 +12,7 @@ SteeringWheelController::SteeringWheelController(unsigned int controllerNumber, 
 {
     this->_controllerDesignator = qMin(controllerNumber, 3u);
     _updateTimer = new QTimer();
-    connect(_updateTimer, SIGNAL(timeout()), this, SLOT(update()));
+    connect(_updateTimer, &QTimer::timeout, this, &SteeringWheelController::update);
 }
 
 void SteeringWheelController::startPolling(unsigned int timerInterval)

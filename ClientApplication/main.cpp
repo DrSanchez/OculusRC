@@ -2,6 +2,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include "controllermanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -23,6 +24,9 @@ int main(int argc, char *argv[])
         screenHeight = screen->availableGeometry().height();
     }
 
+    ControllerManager * controllerManager = new ControllerManager();
+
+    engine.rootContext()->setContextProperty("ControllerManager", controllerManager);
     engine.rootContext()->setContextProperty("ScreenWidth", screenWidth);
     engine.rootContext()->setContextProperty("ScreenHeight", screenHeight);
     engine.rootContext()->setContextProperty("ShowFullscreen", showFullscreen);
