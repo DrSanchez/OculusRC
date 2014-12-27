@@ -2,14 +2,14 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include "controllermanager.h"
+#include "steeringwheelcontroller.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
     QScreen * screen = app.primaryScreen();
-    bool showFullscreen = true;
+    bool showFullscreen = false;
     int screenWidth = 0;
     int screenHeight = 0;
 
@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
         screenHeight = screen->availableGeometry().height();
     }
 
-    ControllerManager * controllerManager = new ControllerManager();
-
-    engine.rootContext()->setContextProperty("ControllerManager", controllerManager);
+    SteeringWheelController * wheelController = new SteeringWheelController(0);
+    wheelController->startPolling(20);
+    engine.rootContext()->setContextProperty("SteeringWheel", wheelController);
     engine.rootContext()->setContextProperty("ScreenWidth", screenWidth);
     engine.rootContext()->setContextProperty("ScreenHeight", screenHeight);
     engine.rootContext()->setContextProperty("ShowFullscreen", showFullscreen);

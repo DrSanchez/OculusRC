@@ -10,7 +10,7 @@ FocusScope
     width: clientMain.width; height: clientMain.height
 
     property bool oculusConnectionStatus: false
-    property bool controllerConnectionStatus: ControllerManager.connected
+    property bool controllerConnectionStatus: SteeringWheel.connected
     property bool serverConnectionStatus: false
 
     Component.onCompleted:
@@ -26,9 +26,8 @@ FocusScope
         minimumWidth: minimumHeight * 1.4
         width: ScreenWidth * 0.66
         height: ScreenHeight * 0.66
-        visibility: "FullScreen"
+        visibility: "Windowed"
         color: clientTheme.mainBackground
-
 
         //instantiate and name the app theme object
         ColorTheme{id:clientTheme}
@@ -308,8 +307,6 @@ FocusScope
 
             Keys.onPressed:
             {
-
-                    console.log("FocusScope.Return Key")
                 if (event.key == Qt.Key_Return)
                 {
                     if (exitButton.activeFocus)

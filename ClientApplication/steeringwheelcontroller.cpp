@@ -2,17 +2,85 @@
 #include <math.h>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <QDebug>
 
 SteeringWheelController::SteeringWheelController(unsigned int controllerNumber, unsigned int leftStickDeadZone,
                                                  unsigned int rightStickDeadZone, unsigned int triggerThreshold,
                                                  QObject * parent)
     : QObject(parent),  _previousConnectState(false), _currentConnectState(false),_leftStickDeadZone(qMin(leftStickDeadZone, MAX_STICK_VALUE)),
-      _rightStickDeadZone(qMin(rightStickDeadZone, MAX_STICK_VALUE)), _triggerThreshold(qMin(triggerThreshold, MAX_TRIGGER_VALUE)), _currentState(this),
-      _previousState(this)
+      _rightStickDeadZone(qMin(rightStickDeadZone, MAX_STICK_VALUE)), _triggerThreshold(qMin(triggerThreshold, MAX_TRIGGER_VALUE))
 {
-    this->_controllerDesignator = qMin(controllerNumber, 3u);
+    _connected = false;
+    _currentState = new XInputControlState(this);
+    _previousState = new XInputControlState(this);
+    _controllerDesignator = qMin(controllerNumber, 3u);
     _updateTimer = new QTimer();
     connect(_updateTimer, &QTimer::timeout, this, &SteeringWheelController::update);
+    connectDefaultSignals();
+}
+
+void SteeringWheelController::connectDefaultSignals()
+{
+    connect(_previousState, &XInputControlState::buttonAChanged, this, &SteeringWheelController::sendEnterKeySignal);
+    connect(_previousState, &XInputControlState::dPadUpChanged, this, &SteeringWheelController::sendUpArrowKeySignal);
+    connect(_previousState, &XInputControlState::dPadDownChanged, this, &SteeringWheelController::sendDownArrowKeySignal);
+    connect(_previousState, &XInputControlState::dPadLeftChanged, this, &SteeringWheelController::sendLeftArrowKeySignal);
+    connect(_previousState, &XInputControlState::dPadRightChanged, this, &SteeringWheelController::sendRightArrowKeySignal);
+}
+
+void SteeringWheelController::sendEnterKeySignal(int value)
+{
+    QKeyEvent event1(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+    QKeyEvent event2(QEvent::KeyRelease, Qt::Key_Return, Qt::NoModifier);
+    QQuickItem * receiver = qobject_cast<QQuickItem *>(QGuiApplication::focusObject());
+    if (value == 0)
+        receiver->window()->sendEvent(receiver, &event1);
+    else if (value == 1)
+        receiver->window()->sendEvent(receiver, &event2);
+}
+
+void SteeringWheelController::sendLeftArrowKeySignal(int value)
+{
+    QKeyEvent event1(QEvent::KeyPress, Qt::Key_Left, Qt::NoModifier);
+    QKeyEvent event2(QEvent::KeyRelease, Qt::Key_Left, Qt::NoModifier);
+    QQuickItem * receiver = qobject_cast<QQuickItem *>(QGuiApplication::focusObject());
+    if (value == 0)
+        receiver->window()->sendEvent(receiver, &event1);
+    else if (value == 1)
+        receiver->window()->sendEvent(receiver, &event2);
+}
+
+void SteeringWheelController::sendRightArrowKeySignal(int value)
+{
+    QKeyEvent event1(QEvent::KeyPress, Qt::Key_Right, Qt::NoModifier);
+    QKeyEvent event2(QEvent::KeyRelease, Qt::Key_Right, Qt::NoModifier);
+    QQuickItem * receiver = qobject_cast<QQuickItem *>(QGuiApplication::focusObject());
+    if (value == 0)
+        receiver->window()->sendEvent(receiver, &event1);
+    else if (value == 1)
+        receiver->window()->sendEvent(receiver, &event2);
+}
+
+void SteeringWheelController::sendUpArrowKeySignal(int value)
+{
+    QKeyEvent event1(QEvent::KeyPress, Qt::Key_Up, Qt::NoModifier);
+    QKeyEvent event2(QEvent::KeyRelease, Qt::Key_Up, Qt::NoModifier);
+    QQuickItem * receiver = qobject_cast<QQuickItem *>(QGuiApplication::focusObject());
+    if (value == 0)
+        receiver->window()->sendEvent(receiver, &event1);
+    else if (value == 1)
+        receiver->window()->sendEvent(receiver, &event2);
+}
+
+void SteeringWheelController::sendDownArrowKeySignal(int value)
+{
+    QKeyEvent event1(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier);
+    QKeyEvent event2(QEvent::KeyRelease, Qt::Key_Down, Qt::NoModifier);
+    QQuickItem * receiver = qobject_cast<QQuickItem *>(QGuiApplication::focusObject());
+    if (value == 0)
+        receiver->window()->sendEvent(receiver, &event1);
+    else if (value == 1)
+        receiver->window()->sendEvent(receiver, &event2);
 }
 
 void SteeringWheelController::startPolling(unsigned int timerInterval)
@@ -33,48 +101,47 @@ void SteeringWheelController::update()
 
     //connection event
     if (_previousConnectState == false && _currentConnectState == true)
-        emit controllerConnected(_controllerDesignator);
+        controllerConnected(true);
 
     //disconnection event
     if (_previousConnectState == true && _currentConnectState == false)
-        emit controllerDisconnected(_controllerDesignator);
+        controllerConnected(false);
 
     _previousConnectState = _currentConnectState;
 
     if (_currentConnectState == true)
     {
         //get buttons
-        _currentState._buttons = xState.Gamepad.wButtons;
+        _currentState->_buttons = xState.Gamepad.wButtons;
 
         //get sticks
-        processStickDeadZone(xState.Gamepad.sThumbLX, xState.Gamepad.sThumbLY, _currentState._leftThumbX, _currentState._leftThumbY, _leftStickDeadZone);
-        processStickDeadZone(xState.Gamepad.sThumbRX, xState.Gamepad.sThumbRY, _currentState._rightThumbX, _currentState._rightThumbY, _rightStickDeadZone);
+        processStickDeadZone(xState.Gamepad.sThumbLX, xState.Gamepad.sThumbLY, _currentState->_leftThumbX, _currentState->_leftThumbY, _leftStickDeadZone);
+        processStickDeadZone(xState.Gamepad.sThumbRX, xState.Gamepad.sThumbRY, _currentState->_rightThumbX, _currentState->_rightThumbY, _rightStickDeadZone);
 
         //get triggers
-        processTriggerThreshold(xState.Gamepad.bLeftTrigger, _currentState._leftTrigger, _triggerThreshold);
-        processTriggerThreshold(xState.Gamepad.bRightTrigger, _currentState._rightTrigger, _triggerThreshold);
+        processTriggerThreshold(xState.Gamepad.bLeftTrigger, _currentState->_leftTrigger, _triggerThreshold);
+        processTriggerThreshold(xState.Gamepad.bRightTrigger, _currentState->_rightTrigger, _triggerThreshold);
 
+        //get battery info
         XINPUT_BATTERY_INFORMATION xBattery;
         memset(&xBattery, 0, sizeof(XINPUT_BATTERY_INFORMATION));
         if (XInputGetBatteryInformation(_controllerDesignator, BATTERY_DEVTYPE_GAMEPAD, &xBattery) == ERROR_SUCCESS)
         {
-            _currentState._batteryState = xBattery.BatteryType;
-            _currentState._batteryLevel = xBattery.BatteryLevel;
+            _currentState->_batteryState = xBattery.BatteryType;
+            _currentState->_batteryLevel = xBattery.BatteryLevel;
         }
         else
         {
-            _currentState._batteryState = BATTERY_TYPE_UNKNOWN;
-            _currentState._batteryLevel = BATTERY_LEVEL_EMPTY;
+            _currentState->_batteryState = BATTERY_TYPE_UNKNOWN;
+            _currentState->_batteryLevel = BATTERY_LEVEL_EMPTY;
         }
 
-        if (_currentState != _previousState)
-            emit newControllerState(_currentState);
+        _previousState->emitControllerSignals(_currentState);
 
-        if (!XInputControlState::batteryEquals(_previousState, _currentState))
-            emit newControllerBatteryState(_currentState._batteryState, _currentState._batteryLevel);
-        _previousState = _currentState;
+        if (!XInputControlState::batteryEquals(*_previousState, *_currentState))
+            emit newControllerBatteryState(_currentState->_batteryState, _currentState->_batteryLevel);
+        _previousState->operator =(*_currentState);//force overloaded operator usage
     }
-
 }
 
 void SteeringWheelController::setGamepadVibration(float leftVibration, float rightVibration)
@@ -112,4 +179,18 @@ bool SteeringWheelController::processTriggerThreshold(quint8 rawValue, float &va
 
     value=((float)rawValue-triggerThreshold)/(MAX_TRIGGER_VALUE-triggerThreshold);
     return true;
+}
+
+void SteeringWheelController::controllerConnected(bool connect)
+{
+    if (connect != _connected)
+    {
+        _connected = connect;
+        emit connectedChanged();
+    }
+}
+
+bool SteeringWheelController::connected()
+{
+    return _connected;
 }
