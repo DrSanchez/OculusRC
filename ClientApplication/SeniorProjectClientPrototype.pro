@@ -2,13 +2,14 @@ TEMPLATE = app
 
 QT += qml quick
 
-SOURCES += main.cpp \
-    steeringwheelcontroller.cpp \
-    controllermanager.cpp \
-    xinputcontrolstate.cpp
+SOURCES += Source/main.cpp \
+    Source/steeringwheelcontroller.cpp \
+    Source/controllermanager.cpp \
+    Source/xinputcontrolstate.cpp
 
-RESOURCES += qml.qrc \
-    ApplicationImages.qrc
+RESOURCES += $${_PRO_FILE_PWD_}/QML/qml.qrc \
+    $${_PRO_FILE_PWD_}/ApplicationImages/ApplicationImages.qrc \
+    $${_PRO_FILE_PWD_}/TextImages/TextImages.qrc
 
 # Add C++ 11 support
 CONFIG   += c++11 (Qt5)
@@ -20,12 +21,15 @@ QML_IMPORT_PATH =
 include(deployment.pri)
 
 HEADERS += \
-    steeringwheelcontroller.h \
-    XInput.h \
-    controllermanager.h \
-    xinputcontrolstate.h
+    Include/steeringwheelcontroller.h \
+    Include/XInput.h \
+    Include/controllermanager.h \
+    Include/xinputcontrolstate.h
 
-win32:LIBS += $${_PRO_FILE_PWD_}/XInput.lib
+# Todo: Add oculus sdk libraries and headers
+
+win32:INCLUDEPATH += $${_PRO_FILE_PWD_}/Include
+win32:LIBS += $${_PRO_FILE_PWD_}/Libraries/XInput.lib
 
 OTHER_FILES += \
     $${_PRO_FILE_PWD_}/XInput.lib

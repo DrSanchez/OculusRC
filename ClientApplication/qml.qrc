@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>main.qml</file>
-        <file>SelectorButton.qml</file>
-        <file>ColorTheme.qml</file>
-        <file>ItemConnectionIndicator.qml</file>
-        <file>ExitButton.qml</file>
-    </qresource>
-</RCC>

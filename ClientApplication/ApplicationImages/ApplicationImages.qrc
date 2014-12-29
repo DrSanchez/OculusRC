@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>ItemConnected.png</file>
+        <file>ItemDisconnected.png</file>
+        <file>dk2.png</file>
+        <file>tk1.png</file>
+        <file>steeringwheel.png</file>
+        <file>nvidia_splash_screen.png</file>
+        <file>oculus_rc_splash_screen.png</file>
+        <file>Oculus_Splash.png</file>
+        <file>oregon_tech_splash.png</file>
+        <file>nvidia_sheen.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>SelectorButton.qml</file>
+        <file>ColorTheme.qml</file>
+        <file>ItemConnectionIndicator.qml</file>
+        <file>ExitButton.qml</file>
+        <file>SplashSequenceController.qml</file>
+        <file>NvidiaSplashController.qml</file>
+        <file>OregonTechSplashController.qml</file>
+        <file>OculusSplashController.qml</file>
+        <file>ApplicationSplashController.qml</file>
+    </qresource>
+</RCC>

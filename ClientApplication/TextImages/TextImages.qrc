@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/text">
+        <file>calibrate_text.png</file>
+        <file>connected_text.png</file>
+        <file>controller_text.png</file>
+        <file>disconnected_text.png</file>
+        <file>drive_text.png</file>
+        <file>exit_text.png</file>
+        <file>jetson_tk1_text.png</file>
+        <file>oculus_text.png</file>
+        <file>oculusrc_logo_text.png</file>
+        <file>press_any_key_text.png</file>
+        <file>settings_text.png</file>
+        <file>test_text.png</file>
+    </qresource>
+</RCC>
