@@ -9,7 +9,14 @@ Rectangle
     radius: 50
     border.width: 4
     border.color: "black"
-    color: clientTheme.selectorButtonBackground
+    gradient: Gradient
+    {
+        //GradientStop { position: 0.05; color: "light gray" }
+        GradientStop { position: 0.1; color: "gray" }
+       // GradientStop { position: 0.25; color: clientTheme.selectorButtonBackground }
+     //   GradientStop { position: 0.65; color: "dark cyan" }
+        GradientStop { position: 0.99; color: "black" }
+    }
 
     state: "UNFOCUSED"
 

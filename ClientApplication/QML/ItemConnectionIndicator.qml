@@ -4,16 +4,14 @@ import QtGraphicalEffects 1.0
 Rectangle
 {
     id: connectionContainer
-    width: clientMain.width * 0.39
-    height: clientMain.height * 0.16
+    width: clientMain.width * 0.37
+    height: clientMain.height * 0.13
     color: "transparent"
 
     state: "UNFOCUSED"
 
     property int hardwareDescriptor: 1
     property bool connected: false
-
-    signal deviceConnected ()
 
     Rectangle
     {
@@ -25,8 +23,8 @@ Rectangle
         border.color: "black"
         gradient: Gradient
         {
-            GradientStop { position: 0.00; color: clientTheme.indicatorBackground }
-            GradientStop { position: 0.65; color: "dark red" }
+            GradientStop { position: 0.00; color: connected ? "green" : clientTheme.indicatorBackground }
+            GradientStop { position: 0.65; color: connected ? "dark green" : "dark red" }
         }
 
         Image

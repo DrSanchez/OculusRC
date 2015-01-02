@@ -10,5 +10,6 @@
         <file>Oculus_Splash.png</file>
         <file>oregon_tech_splash.png</file>
         <file>nvidia_sheen.png</file>
+        <file>main_background.png</file>
     </qresource>
 </RCC>

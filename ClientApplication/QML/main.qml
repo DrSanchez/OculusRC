@@ -15,6 +15,7 @@ FocusScope
 
     Component.onCompleted:
     {//app init code
+        splashSequence.focus = true;
         splashSequence.running = true;//start the splash sequence
     }
 
@@ -33,7 +34,6 @@ FocusScope
             else if (!ShowFullscreen)
                 clientMain.visibility = "Windowed";
         }
-        color: clientTheme.mainBackground
 
         //instantiate and name the app theme object
         ColorTheme{id:clientTheme}
@@ -56,62 +56,15 @@ FocusScope
             button4.scaleButton();
         }
 
-        Rectangle
+        Image
         {
             id: userInterfaceContainer
             width: parent.width
             height: parent.height
             anchors.fill: parent
             anchors.centerIn: parent
-            gradient: Gradient
-            {
-                GradientStop { position: 0.0; color: "#0d353d" }
-                GradientStop { position: 0.3; color: "#0c343d" }
-                GradientStop { position: 0.6; color: "#0b2e35" }
-            }
+            source: "qrc:/images/main_background.png"
 
-            Rectangle
-            {
-                id: backgroundUnderlay
-                height: parent.height
-                width: parent.width * 0.9
-                radius: 300
-                gradient: Gradient
-                {
-                    GradientStop { position: 0.2; color: "dark gray" }
-                    GradientStop { position: 0.8; color: "gray" }
-                }
-                opacity: 0.8
-                anchors.right: parent.right
-                anchors.rightMargin: parent.width * 0.05
-
-                Text
-                {
-                    id: applicationTitleText
-                    font.pixelSize: parent.height * 0.15
-                    text: "OculusRC"
-                    font.underline: true
-                    font.italic: true
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.topMargin: parent.height * 0.008
-                    anchors.leftMargin: parent.width * 0.075
-                }
-
-                Rectangle
-                {
-                    height: parent.height
-                    width: parent.width / 2
-                    anchors.left: parent.right
-                    anchors.leftMargin: -(parent.width * 0.25)
-                    opacity: 0.95
-                    gradient: Gradient
-                    {
-                        GradientStop { position: 0.2; color: "dark gray" }
-                        GradientStop { position: 0.8; color: "gray" }
-                    }
-                }
-            }
 
             Rectangle
             {
@@ -200,9 +153,9 @@ FocusScope
             Rectangle
             {
                 id: bevelOuter
-                width: parent.height * 0.65
-                height: parent.width * 0.5
-                x: parent.width * 0.15
+                width: parent.height * 0.6
+                height: parent.width * 0.45
+                x: parent.width * 0.205
                 anchors.verticalCenter: parent.verticalCenter
                 rotation: -90
                 gradient: Gradient
@@ -246,7 +199,7 @@ FocusScope
                         anchors.topMargin: parent.height * 0.05
                         anchors.left: parent.left
                         anchors.leftMargin: parent.width * 0.05
-                        spacing: parent.height * 0.05
+                        spacing: parent.height * 0.08
 
                         ItemConnectionIndicator
                         {
@@ -289,7 +242,7 @@ FocusScope
             {
                 id: exitButton
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: parent.height * 0.03
+                anchors.bottomMargin: parent.height * 0.04
                 anchors.left: parent.left
                 anchors.leftMargin: parent.width * 0.25
                 z: parent.z + 1

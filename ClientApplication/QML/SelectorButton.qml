@@ -6,7 +6,15 @@ Rectangle
     id: selectorButtonParent
     width: clientMain.width * 0.538
     height: clientMain.height * 0.12
-    color: clientTheme.selectorButtonBackground
+    gradient: Gradient
+    {
+        GradientStop { position: 0.05; color: "white" }
+        GradientStop { position: 0.15; color: "gray" }
+        GradientStop { position: 0.25; color: clientTheme.selectorButtonBackground }
+        GradientStop { position: 0.6; color: clientTheme.selectorButtonBackground }
+        GradientStop { position: 0.99; color: "black" }
+    }
+
     radius: (parent.height + parent.width) / 2
     border.width: 4
     border.color: "black"
