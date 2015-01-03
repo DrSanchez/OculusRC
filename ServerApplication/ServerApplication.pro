@@ -8,7 +8,8 @@ QML_IMPORT_PATH =
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
-    networkmanager.cpp
+    networkmanager.cpp \
+    cameracontroller.cpp
 
 QMAKE_CXXFLAGS += -std=c++11
 
@@ -20,4 +21,5 @@ include(qtquick2applicationviewer/qtquick2applicationviewer.pri)
 qtcAddDeployment()
 
 HEADERS += \
-    networkmanager.h
+    networkmanager.h \
+    cameracontroller.h

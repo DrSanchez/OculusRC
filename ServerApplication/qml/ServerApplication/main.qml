@@ -113,4 +113,75 @@ Rectangle
             }
         }
     }
+
+    Rectangle
+    {
+        id: cameraFeedContainer1
+        height: parent.height * 0.25
+        width: parent.width * 0.4
+        anchors.top: parent.top
+        anchors.topMargin: parent.height * 0.025
+        anchors.left: messageLogContainer.right
+        anchors.leftMargin: parent.width * 0.03
+        color: "transparent"
+        border.color: "black"
+        border.width: 2
+
+        Text
+        {
+            id: camera1Text
+            text: "Camera 1:"
+            font.pixelSize: parent.height * 0.15
+            anchors.left: parent.left
+            anchors.leftMargin: parent.width * 0.01
+            anchors.verticalCenter: parent.verticalCenter
+        }
+    }
+    Rectangle
+    {
+        id: cameraFeedContainer2
+        height: parent.height * 0.25
+        width: parent.width * 0.4
+        anchors.top: cameraFeedContainer1.bottom
+        anchors.topMargin: parent.height * 0.015
+        anchors.left: messageLogContainer.right
+        anchors.leftMargin: parent.width * 0.03
+        color: "transparent"
+        border.color: "black"
+        border.width: 2
+
+        Text
+        {
+            id: camera2Text
+            text: "Camera 2:"
+            font.pixelSize: parent.height * 0.15
+            anchors.left: parent.left
+            anchors.leftMargin: parent.width * 0.01
+            anchors.verticalCenter: parent.verticalCenter
+        }
+    }
+    Text
+    {
+        id: rcDummyLabel
+        text: "RC Dummy:                              "
+        font.pixelSize: applicationLabel.font.pixelSize * 0.5
+        font.underline: true
+        anchors.top: cameraFeedContainer2.bottom
+        anchors.topMargin: parent.height * 0.015
+        anchors.left: messageLogContainer.right
+        anchors.leftMargin: parent.width * 0.03
+    }
+    Rectangle
+    {
+        id: rcDummyContainer
+        height: parent.height * 0.35
+        width: parent.width * 0.4
+        anchors.top: rcDummyLabel.bottom
+        anchors.topMargin: parent.height * 0.0125
+        anchors.left: messageLogContainer.right
+        anchors.leftMargin: parent.width * 0.03
+        color: "transparent"
+        border.color: "black"
+        border.width: 2
+    }
 }
