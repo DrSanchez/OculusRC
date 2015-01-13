@@ -5,11 +5,9 @@
         <file>dk2.png</file>
         <file>tk1.png</file>
         <file>steeringwheel.png</file>
-        <file>nvidia_splash_screen.png</file>
-        <file>oculus_rc_splash_screen.png</file>
-        <file>Oculus_Splash.png</file>
-        <file>oregon_tech_splash.png</file>
         <file>nvidia_sheen.png</file>
-        <file>main_background.png</file>
+        <file>error_icon.png</file>
+        <file>information_icon.png</file>
+        <file>warning_icon.png</file>
     </qresource>
 </RCC>

@@ -6,6 +6,7 @@ Rectangle
     id: selectorButtonParent
     width: clientMain.width * 0.538
     height: clientMain.height * 0.12
+    anchors.rightMargin: -(parent.width * 0.45)
     gradient: Gradient
     {
         GradientStop { position: 0.05; color: "white" }
@@ -21,15 +22,17 @@ Rectangle
 
     property string sourceText: ""
 
+    state: "UNFOCUSED"
+
     onFocusChanged:
     {
         if (focus)
         {
-            anchors.rightMargin =  -(selectorButtonParent.width * 0.35);
+            state = "FOCUSED";
         }
         else if (!focus)
         {
-            anchors.rightMargin = -(selectorButtonParent.width * 0.45);
+            state = "UNFOCUSED";
         }
     }
 
@@ -113,4 +116,18 @@ Rectangle
     {
         toggleCircle.setSizeOfCircle(height, height, height / 2);
     }
+
+    states:
+    [
+        State
+        {
+            name: "UNFOCUSED"
+            PropertyChanges { target: selectorButtonParent; anchors.rightMargin: -(selectorButtonParent.width * 0.45); }
+        },
+        State
+        {
+            name: "FOCUSED"
+            PropertyChanges { target: selectorButtonParent; anchors.rightMargin: -(selectorButtonParent.width * 0.35); }
+        }
+    ]
 }

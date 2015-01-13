@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/background">
+        <file>drive_menu_background.png</file>
+        <file>main_background.png</file>
+        <file>nvidia_splash_screen.png</file>
+        <file>oculus_rc_splash_screen.png</file>
+        <file>Oculus_Splash.png</file>
+        <file>oregon_tech_splash.png</file>
+        <file>settings_menu_background.png</file>
+    </qresource>
+</RCC>

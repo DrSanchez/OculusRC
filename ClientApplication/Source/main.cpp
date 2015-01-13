@@ -3,6 +3,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "steeringwheelcontroller.h"
+#include "clientnetworkmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,8 +25,10 @@ int main(int argc, char *argv[])
         screenHeight = screen->availableGeometry().height();
     }
 
+    ClientNetworkManager * clientNetwork = new ClientNetworkManager();
     SteeringWheelController * wheelController = new SteeringWheelController(0);
     wheelController->startPolling(20);
+    engine.rootContext()->setContextProperty("ClientNetwork", clientNetwork);
     engine.rootContext()->setContextProperty("SteeringWheel", wheelController);
     engine.rootContext()->setContextProperty("ScreenWidth", screenWidth);
     engine.rootContext()->setContextProperty("ScreenHeight", screenHeight);

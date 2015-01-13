@@ -15,7 +15,7 @@ Rectangle
     {
         id: oculusSplashImage
         height: parent.height
-        source: "qrc:/images/Oculus_Splash.png"
+        source: "qrc:/background/Oculus_Splash.png"
         fillMode: Image.PreserveAspectFit
         opacity: 0
     }

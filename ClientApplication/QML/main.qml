@@ -11,7 +11,7 @@ FocusScope
 
     property bool oculusConnectionStatus: false
     property bool controllerConnectionStatus: SteeringWheel.connected
-    property bool serverConnectionStatus: false
+    property bool serverConnectionStatus: ClientNetwork.connected
 
     Component.onCompleted:
     {//app init code
@@ -35,242 +35,91 @@ FocusScope
                 clientMain.visibility = "Windowed";
         }
 
+        property string customState: "INITIALIZING"
+
+        onCustomStateChanged:
+        {
+            if (customState == "INITIALIZING")
+            {
+                //current do nothing
+            }
+            else if (customState == "HOME")
+            {
+                //driveMenu.visible = false;
+                //calibrateMenu.visible = false;
+                //testMenu.visible = false;
+                //settingsMenu.visible = false;
+                if (driveMenu.x != homeScreen.width)
+                    driveMenu.x = homeScreen.width
+                if (settingsMenu.x != homeScreen.width)
+                    settingsMenu.x = homeScreen.width;
+                homeScreen.x = 0;
+                homeScreen.setDefaultFocus();
+            }
+            else if (customState == "DRIVE")
+            {
+                driveMenu.visible = true;
+                //calibrateMenu.visible = false;
+                //testMenu.visible = false;
+                //settingsMenu.visible = false;
+                homeScreen.x = 0 - homeScreen.width;
+                driveMenu.x = 0;
+                driveMenu.setDefaultFocus();
+            }
+            else if (customState == "CALIBRATE")
+            {
+                //driveMenu.visible = false;
+                //calibrateMenu.visible = true;
+                //testMenu.visible = false;
+                //settingsMenu.visible = false;
+                //homeScreen.x = 0 - homeScreen.width;
+                //calibrateMenu.x = 0;
+                //calibrateMenu.setDefaultFocus();
+            }
+            else if (customState == "TEST")
+            {
+                //driveMenu.visible = false;
+                //calibrateMenu.visible = false;
+                //testMenu.visible = true;
+                //settingsMenu.visible = false;
+                //homeScreen.x = 0 - homeScreen.width;
+                //testMenu.x = 0;
+                //testMenu.setDefaultFocus();
+            }
+            else if (customState == "SETTINGS")
+            {
+                //driveMenu.visible = false;
+                //calibrateMenu.visible = false;
+                //testMenu.visible = false;
+                settingsMenu.visible = true;
+                homeScreen.x = 0 - homeScreen.width;
+                settingsMenu.x = 0;
+                settingsMenu.setDefaultFocus();
+            }
+            else if (customState == "ALERT")
+            {
+
+            }
+        }
+
         //instantiate and name the app theme object
         ColorTheme{id:clientTheme}
-
-        SplashSequenceController{id: splashSequence; onRunningChanged: if(!running){button1.focus=true;splashSequence.destroy();}}
-
-        onHeightChanged:
+        SplashSequenceController
         {
-            button1.scaleButton();
-            button2.scaleButton();
-            button3.scaleButton();
-            button4.scaleButton();
-        }
-
-        onWidthChanged:
-        {
-            button1.scaleButton();
-            button2.scaleButton();
-            button3.scaleButton();
-            button4.scaleButton();
-        }
-
-        Image
-        {
-            id: userInterfaceContainer
-            width: parent.width
-            height: parent.height
-            anchors.fill: parent
-            anchors.centerIn: parent
-            source: "qrc:/images/main_background.png"
-
-
-            Rectangle
+            id: splashSequence
+            onRunningChanged:
             {
-                id: controlContainer
-                anchors.top: parent.top
-                anchors.topMargin: parent.height * 0.05
-                anchors.right: parent.right
-                anchors.rightMargin: -(parent.height * 0.4)
-                height: parent.height * .85
-                width: parent.height * 1.3
-                rotation: 90
-                radius: 500
-                opacity: 0.9
-                border.width: 2
-                border.color: "black"
-                gradient: Gradient
+                if(!running)
                 {
-                    GradientStop { position: 0.00; color: "#0c343d"; }
-                    GradientStop { position: 0.25; color: "#155d6e"; }
-                    GradientStop { position: 0.75; color: "#155d6e"; }
-                    GradientStop { position: 1; color: "#0c343d"; }
-                }
-
-                z: parent.z + 1;
-            }
-
-            Column
-            {
-                id: buttons
-                anchors.right: parent.right
-                anchors.topMargin: button1.height * 0.8
-                anchors.bottomMargin: button4.height * 0.8
-                z: controlContainer.z + 1
-                anchors.top: parent.top
-                spacing: button1.height * 0.8
-
-                SelectorButton
-                {
-                    id: button1
-                    anchors.right: parent.right
-                    sourceText: "qrc:/text/drive_text.png"
-
-                    KeyNavigation.up: button4;
-                    KeyNavigation.down: button2;
-                    KeyNavigation.left: serverItem;
-                    KeyNavigation.right: serverItem;
-                }
-
-                SelectorButton
-                {
-                    id: button2
-                    anchors.right: parent.right
-                    sourceText: "qrc:/text/calibrate_text.png"
-
-                    KeyNavigation.up: button1;
-                    KeyNavigation.down: button3;
-                    KeyNavigation.left: oculusItem;
-                    KeyNavigation.right: oculusItem;
-                }
-
-                SelectorButton
-                {
-                    id: button3
-                    anchors.right: parent.right
-                    sourceText: "qrc:/text/test_text.png"
-
-                    KeyNavigation.up: button2;
-                    KeyNavigation.down: button4;
-                    KeyNavigation.left: controllerItem;
-                    KeyNavigation.right: controllerItem;
-                }
-
-                SelectorButton
-                {
-                    id: button4
-                    anchors.right: parent.right
-                    sourceText: "qrc:/text/settings_text.png"
-
-                    KeyNavigation.up: button3;
-                    KeyNavigation.down: button1;
-                    KeyNavigation.left: exitButton;
-                    KeyNavigation.right: exitButton;
-                }
-            }
-
-            Rectangle
-            {
-                id: bevelOuter
-                width: parent.height * 0.6
-                height: parent.width * 0.45
-                x: parent.width * 0.205
-                anchors.verticalCenter: parent.verticalCenter
-                rotation: -90
-                gradient: Gradient
-                {
-                    GradientStop { position: 0.00; color: "#073e70"; }
-                    GradientStop { position: 0.15; color: "#073763"; }
-                    GradientStop { position: 0.75; color: "#073763"; }
-                    GradientStop { position: 0.98; color: "#052747"; }
-                }
-
-                z: parent.z + 1
-                border.width: 2
-                border.color: "black"
-
-
-                Rectangle
-                {
-                    id: bevelInner
-                    width: parent.height * 0.95
-                    height: parent.width * 0.95
-                    gradient: Gradient
-                    {
-                        GradientStop { position: 0.00; color: "#073e70"; }
-                        GradientStop { position: 0.15; color: "#073763"; }
-                        GradientStop { position: 0.75; color: "#073763"; }
-                        GradientStop { position: 0.98; color: "#052747"; }
-                    }
-                    z: parent.z + 1
-                    opacity: 0.75
-                    anchors.centerIn: parent
-                    border.width: 2
-                    border.color: "black"
-                    rotation: 90
-
-                    Column
-                    {
-                        id: connectionItemContainer
-                        height: parent.height
-                        width: parent.width
-                        anchors.top: parent.top
-                        anchors.topMargin: parent.height * 0.05
-                        anchors.left: parent.left
-                        anchors.leftMargin: parent.width * 0.05
-                        spacing: parent.height * 0.08
-
-                        ItemConnectionIndicator
-                        {
-                            id: serverItem
-                            hardwareDescriptor: 1
-                            connected: serverConnectionStatus
-
-                            KeyNavigation.up: exitButton;
-                            KeyNavigation.down: oculusItem;
-                            KeyNavigation.left: button1;
-                            KeyNavigation.right: button1;
-                        }
-                        ItemConnectionIndicator
-                        {
-                            id: oculusItem
-                            hardwareDescriptor: 2
-                            connected: oculusConnectionStatus
-
-                            KeyNavigation.up: serverItem;
-                            KeyNavigation.down: controllerItem;
-                            KeyNavigation.left: button2;
-                            KeyNavigation.right: button2;
-                        }
-                        ItemConnectionIndicator
-                        {
-                            id: controllerItem
-                            hardwareDescriptor: 3
-                            connected: controllerConnectionStatus
-
-                            KeyNavigation.up: oculusItem;
-                            KeyNavigation.down: exitButton;
-                            KeyNavigation.left: button3;
-                            KeyNavigation.right: button3;
-                        }
-                    }
-                }
-
-            }
-            ExitButton
-            {
-                id: exitButton
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: parent.height * 0.04
-                anchors.left: parent.left
-                anchors.leftMargin: parent.width * 0.25
-                z: parent.z + 1
-
-                KeyNavigation.up: controllerItem;
-                KeyNavigation.down: serverItem;
-                KeyNavigation.left: button4;
-                KeyNavigation.right: button4;
-
-                MouseArea
-                {
-                    anchors.fill: parent
-                    onClicked: exitButton.exit();
-                }
-
-
-                Keys.onPressed:
-                {
-                    if (event.key == Qt.Key_Return)
-                    {
-                        if (exitButton.activeFocus)
-                        {
-                            exitButton.exit();
-                        }
-                    }
+                    homeScreen.setDefaultFocus();
+                    clientMain.customState = "HOME";
+                    splashSequence.destroy();
                 }
             }
         }
-
+        MessageAlertBox{id:alertBox}
+        Home{id:homeScreen}
+        SettingsMenu{id:settingsMenu}
+        DriveMenu{id:driveMenu}
     }
 }

@@ -4,11 +4,20 @@
         <file>SelectorButton.qml</file>
         <file>ColorTheme.qml</file>
         <file>ItemConnectionIndicator.qml</file>
-        <file>ExitButton.qml</file>
+        <file>GeneralButton.qml</file>
         <file>SplashSequenceController.qml</file>
         <file>NvidiaSplashController.qml</file>
         <file>OregonTechSplashController.qml</file>
         <file>OculusSplashController.qml</file>
         <file>ApplicationSplashController.qml</file>
+        <file>Home.qml</file>
+        <file>SettingsMenu.qml</file>
+        <file>SettingsMenuItem.qml</file>
+        <file>ApplicationSettings.qml</file>
+        <file>OculusSettings.qml</file>
+        <file>ControllerSettings.qml</file>
+        <file>ESCSettings.qml</file>
+        <file>DriveMenu.qml</file>
+        <file>MessageAlertBox.qml</file>
     </qresource>
 </RCC>

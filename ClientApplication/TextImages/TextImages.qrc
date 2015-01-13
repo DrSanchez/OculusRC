@@ -12,5 +12,11 @@
         <file>press_any_key_text.png</file>
         <file>settings_text.png</file>
         <file>test_text.png</file>
+        <file>application_settings_text.png</file>
+        <file>esc_settings_text.png</file>
+        <file>oculus_rift_settings_text.png</file>
+        <file>back_text.png</file>
+        <file>go_text.png</file>
+        <file>ok_text.png</file>
     </qresource>
 </RCC>

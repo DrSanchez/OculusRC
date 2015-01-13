@@ -62,38 +62,37 @@ Rectangle
             }
         }
 
-        Text
+        Image
         {
             id: hardwareText
-            font.pixelSize: parent.height * 0.25
+            width: parent.width * 0.5
+            fillMode: Image.PreserveAspectFit
             anchors.top: parent.top
             anchors.topMargin: parent.height * 0.1
-            anchors.left: parent.left
-            anchors.leftMargin: parent.width * 0.5
-            text:
+            anchors.right: parent.right
+            anchors.rightMargin: parent.width * 0.1
+            source:
             {
                 switch(connectionContainer.hardwareDescriptor)
                 {
                 case 1:
-                    hardwareText.text = "TK1 Server";
+                    hardwareText.source = "qrc:/text/jetson_tk1_text.png";
                     break;
                 case 2:
-                    hardwareText.text = "Oculus DK2"
+                    hardwareText.source = "qrc:/text/oculus_text.png"
                     break;
                 case 3:
-                    hardwareText.text = "Controller"
-                    break;
-                default:
-                    console.log("Hardware Text, invalid descriptor. Options are 1, 2, and 3.")
+                    hardwareText.source = "qrc:/text/controller_text.png"
                     break;
                 }
             }
         }
 
-        Text
+        Image
         {
             id: hardwareConnectedText
-            font.pixelSize: parent.height * 0.25
+            width: parent.width * 0.5
+            fillMode: Image.PreserveAspectFit
             anchors.top: hardwareText.bottom
             anchors.topMargin: hardwareText.height * 0.05
             anchors.horizontalCenter: hardwareText.horizontalCenter
@@ -102,23 +101,23 @@ Rectangle
             {
                 if (connected)
                 {
-                    hardwareConnectedText.text = "Connected"
+                    hardwareConnectedText.source = "qrc:/text/connected_text.png";
                 }
                 else if (!connected)
                 {
-                    hardwareConnectedText.text = "Disconnected"
+                    hardwareConnectedText.source = "qrc:/text/disconnected_text.png";
                 }
             }
 
-            text:
+            source:
             {
                 if (connected)
                 {
-                    hardwareConnectedText.text = "Connected"
+                    hardwareConnectedText.source = "qrc:/text/connected_text.png";
                 }
                 else if (!connected)
                 {
-                    hardwareConnectedText.text = "Disconnected"
+                    hardwareConnectedText.source = "qrc:/text/disconnected_text.png";
                 }
             }
         }
@@ -197,7 +196,7 @@ Rectangle
         State
         {
             name: "FOCUSED"
-            PropertyChanges { target: highlightedGlow; color: "dark red" }
+            PropertyChanges { target: highlightedGlow; color: connected ? "dark green" : "dark red" }
         },
         State
         {

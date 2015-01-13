@@ -15,7 +15,7 @@ Rectangle
     {
         id: nvidiaSplashImage
         height: parent.height
-        source: "qrc:/images/nvidia_splash_screen.png"
+        source: "qrc:/background/nvidia_splash_screen.png"
         fillMode: Image.PreserveAspectFit
         opacity: 0
     }

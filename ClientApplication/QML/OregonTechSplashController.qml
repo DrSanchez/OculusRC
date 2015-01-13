@@ -15,7 +15,7 @@ Rectangle
     {
         id: oregonTechSplashImage
         height: parent.height
-        source: "qrc:/images/oregon_tech_splash.png"
+        source: "qrc:/background/oregon_tech_splash.png"
         fillMode: Image.PreserveAspectFit
         opacity: 0
     }
