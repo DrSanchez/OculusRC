@@ -11,6 +11,7 @@ SteeringWheelController::SteeringWheelController(unsigned int controllerNumber, 
       _rightStickDeadZone(qMin(rightStickDeadZone, MAX_STICK_VALUE)), _triggerThreshold(qMin(triggerThreshold, MAX_TRIGGER_VALUE))
 {
     _connected = false;
+    _driveMode = false;
     _currentState = new XInputControlState(this);
     _previousState = new XInputControlState(this);
     _controllerDesignator = qMin(controllerNumber, 3u);
@@ -141,6 +142,9 @@ void SteeringWheelController::update()
         if (!XInputControlState::batteryEquals(*_previousState, *_currentState))
             emit newControllerBatteryState(_currentState->_batteryState, _currentState->_batteryLevel);
         _previousState->operator =(*_currentState);//force overloaded operator usage
+
+        if (_driveMode)
+            sendRemoteControlData();
     }
 }
 
@@ -193,4 +197,55 @@ void SteeringWheelController::controllerConnected(bool connect)
 bool SteeringWheelController::connected()
 {
     return _connected;
+}
+
+void SteeringWheelController::setDriveMode(bool set)
+{
+    if (_driveMode != set)
+    {
+        _driveMode = set;
+        emit driveModeChanged();
+    }
+}
+
+bool SteeringWheelController::driveMode()
+{
+    return _driveMode;
+}
+
+void SteeringWheelController::sendRemoteControlData()
+{
+    double steeringAngleValue = 0.0;
+    double throttleValue = 0.0;
+    bool forward = true;//default direction is forward
+    if (_currentState->_leftTrigger > 0 && _currentState->_rightTrigger > 0)
+    {//check if both pedals/triggers are pressed - use the higher value
+        if (_currentState->_leftTrigger > _currentState->_rightTrigger)
+        {
+            forward = false;
+            throttleValue = _currentState->_leftTrigger;
+        }
+        else if (_currentState->_rightTrigger > _currentState->_leftTrigger)
+        {
+            forward = true;
+            throttleValue = _currentState->_rightTrigger;
+        }
+        else if (_currentState->_leftTrigger == _currentState->_rightTrigger)
+        {//in very unlikely case of equal values, use forward (right trigger)
+            forward = true;
+            throttleValue = _currentState->_rightTrigger;
+        }
+    }
+    else if (_currentState->_leftTrigger > 0 && _currentState->_rightTrigger == 0)
+    {//reverse trigger/pedal
+        throttleValue = _currentState->_leftTrigger;
+        forward = false;
+    }
+    else if (_currentState->_rightTrigger > 0 && _currentState->_leftTrigger == 0)
+    {//forward trigger/pedal
+        throttleValue = _currentState->_rightTrigger;
+        forward = true;
+    }
+    steeringAngleValue = _currentState->_leftThumbX;
+    emit remoteControlData(steeringAngleValue, throttleValue, forward, _currentState->buttonA() == 0 ? true : false);
 }

@@ -28,15 +28,22 @@ class SteeringWheelController : public QObject
     Q_OBJECT
 
     Q_PROPERTY(bool connected READ connected NOTIFY connectedChanged)
+    Q_PROPERTY(bool driveMode READ driveMode WRITE setDriveMode NOTIFY driveModeChanged)
 
 public:
     explicit SteeringWheelController(unsigned int controllerNumber, unsigned int leftStickDeadZone = XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE, unsigned int rightStickDeadZone = XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE, unsigned int triggerThreshold = XINPUT_GAMEPAD_TRIGGER_THRESHOLD, QObject *parent = 0);
 
     bool connected();
 
+    void setDriveMode(bool set);
+    bool driveMode();
+    void sendRemoteControlData();
+
 signals:
     void newControllerBatteryState(quint8 newBatteryType, quint8 newBatteryLevel);
     void connectedChanged();
+    void driveModeChanged();
+    void remoteControlData(double steeringValue, double throttle, bool direction, bool boost);
 
 public slots:
     //public controller methods
@@ -81,6 +88,7 @@ private:
 
     //private members
     bool _connected;
+    bool _driveMode;
 
 };
 

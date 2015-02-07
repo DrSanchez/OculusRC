@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
     QScreen * screen = app.primaryScreen();
-    bool showFullscreen = true;
+    bool showFullscreen = false;
     int screenWidth = 0;
     int screenHeight = 0;
 
@@ -25,8 +25,8 @@ int main(int argc, char *argv[])
         screenHeight = screen->availableGeometry().height();
     }
 
-    ClientNetworkManager * clientNetwork = new ClientNetworkManager();
     SteeringWheelController * wheelController = new SteeringWheelController(0);
+    ClientNetworkManager * clientNetwork = new ClientNetworkManager(wheelController);
     wheelController->startPolling(20);
     engine.rootContext()->setContextProperty("ClientNetwork", clientNetwork);
     engine.rootContext()->setContextProperty("SteeringWheel", wheelController);

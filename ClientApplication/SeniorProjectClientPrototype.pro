@@ -6,7 +6,8 @@ SOURCES += Source/main.cpp \
     Source/steeringwheelcontroller.cpp \
     Source/controllermanager.cpp \
     Source/xinputcontrolstate.cpp \
-    Source/clientnetworkmanager.cpp
+    Source/clientnetworkmanager.cpp \
+    Source/packetmanager.cpp
 
 RESOURCES += $${_PRO_FILE_PWD_}/QML/qml.qrc \
     $${_PRO_FILE_PWD_}/ApplicationImages/ApplicationImages.qrc \
@@ -27,7 +28,8 @@ HEADERS += \
     Include/XInput.h \
     Include/controllermanager.h \
     Include/xinputcontrolstate.h \
-    Include/clientnetworkmanager.h
+    Include/clientnetworkmanager.h \
+    Include/packetmanager.h
 
 # Todo: Add oculus sdk libraries and headers
 

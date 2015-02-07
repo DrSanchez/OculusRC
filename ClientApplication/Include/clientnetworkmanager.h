@@ -8,13 +8,12 @@
  * IP address
  *********************************************/
 
-#include <QObject>
-#include <QByteArray>
 #include <QTcpSocket>
-#include <QString>
+#include "packetmanager.h"
+#include "steeringwheelcontroller.h"
 
-//Default Jetson Home IP: 192.168.2.3
-static const QString jetsonIP = "192.168.2.3";
+//Default Jetson Home IP: 192.168.2.4
+static const QString jetsonIP = "192.168.2.4";
 //Default Jetson Server Port: 9999
 static const int jetsonPort = 9999;
 
@@ -22,9 +21,10 @@ class ClientNetworkManager : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool connected READ connected NOTIFY connectedChanged)
+
 public:
     //constructors and destructors
-    explicit ClientNetworkManager(QObject *parent = 0);
+    explicit ClientNetworkManager(SteeringWheelController * controller, QObject *parent = 0);
 
     //QML property read methods
     bool connected();
@@ -32,6 +32,9 @@ public:
     //public methods exposed to QML
     Q_INVOKABLE void connectToJetson();
     Q_INVOKABLE void disconnectFromJetson();
+
+    //public send packet method
+    void sendCurrentPacket();
 
 signals:
     //QML property signals
@@ -44,6 +47,7 @@ public slots:
     void disconnected();
     void bytesWritten(qint64 bytes);
     void readyRead();
+    void handleNewControlData();
 
 private:
     //private methods
@@ -53,6 +57,8 @@ private:
     //private data members
     QTcpSocket * _socket;
     bool _connected;
+    PacketManager * _packetizer;
+    SteeringWheelController * _controller;
 
 };
 

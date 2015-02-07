@@ -129,12 +129,16 @@ Image
 
         Keys.onReturnPressed:
         {
-            if (oculusConnectionStatus && serverConnectionStatus && controllerConnectionStatus)
+            //oculusConnectionStatus needs to be added when video is started
+            //drive menu in drive mode will display standard views of camera feeds
+            //
+            if (serverConnectionStatus && controllerConnectionStatus)
             {
-             //futureproof hook
+                SteeringWheel.driveMode = true;
             }
             else
             {
+                SteeringWheel.driveMode = true;
                 clientMain.customState = "ALERT";
                 alertBox.showBox(3, "Drive Check Failure",
                                  "Not all systems are ready to drive the RC. Please ensure all connections are properly established.",
