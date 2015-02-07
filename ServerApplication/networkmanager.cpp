@@ -1,10 +1,11 @@
 #include "networkmanager.h"
 #include <QDebug>
 
-NetworkManager::NetworkManager(QObject *parent) :
-    QObject(parent)
+NetworkManager::NetworkManager(QObject *parent)
+    : QObject(parent), _packetManager(nullptr)
 {
     //object allocation
+    _packetManager = new PacketManager(this);
     _server = new QTcpServer(this);
 
     //tied newConnection handler to server signal
@@ -46,20 +47,28 @@ void NetworkManager::Destroy()
 void NetworkManager::readClientBytes()
 {
     //socket null check
-    if (_clientSocket != nullptr)
+    if (_clientSocket->isOpen())
     {
         //get client socket bytes
-        QByteArray bytes = _clientSocket->readAll();
-        emit sendBytesToMessageLog(QString(bytes));
-
-        //processBytes, or is this method process bytes?
-
-        //echo message back to client: debugging assistance
-        _clientSocket->write(bytes);
-        qDebug() << bytes << bytes.length();
+        QByteArray bytes(_clientSocket->readAll());
+        ClientPacket * packet = _packetManager->unpack(bytes);
+        if (packet != nullptr)
+        {
+            qDebug() << "unpacked message: " << packet->_message;
+            QString steering = QString::number(packet->_steeringAngle);
+            QString throttle = QString::number(packet->_throttle);
+            QString direction = (packet->_forward ? "Forward" : "Reverse");
+            QString boost = (packet->_boost ? "On" : "Off");
+            QString clientPacketData = "Client Packet: \nSteering: " + steering +
+                                       "\nThrottle: " + throttle + "\nDirection: " + direction +
+                                       "\nBoost: " + boost + '\n';
+            emit sendBytesToMessageLog(clientPacketData);
+        }
+        else if (packet == nullptr)
+            qDebug() << "something bad happened";
 
         //close server if bytes contain exit bytes
-        if(checkBytesForExit(bytes))
+        if(checkMessageForExit(_packetManager->getMessage()))
             Destroy();
     }
 }
@@ -73,13 +82,14 @@ void NetworkManager::newConnection()
     connect(_clientSocket, &QTcpSocket::readyRead, this, &NetworkManager::readClientBytes);
 
     qDebug() << "In new connection...";
+    emit sendBytesToMessageLog("In new connection...\r\n");
+    bool test = true;
+    emit sendBytesToMessageLog((test == true ? QString::number(test) : "false"));
 
     //write hello message to client socket
-    _clientSocket->write("Hello client\r\n");
-    emit sendBytesToMessageLog("In new connection...\r\nHello client\r\n");
-    _clientSocket->flush();
+    _packetManager->setMessage("Hello Client");
+    sendCurrentPacket();
 }
-
 
 bool NetworkManager::checkBytesForExit(QByteArray bytes)
 {
@@ -90,6 +100,39 @@ bool NetworkManager::checkBytesForExit(QByteArray bytes)
     if (dataBytes.contains("exit"))
         return true;
     return false;
+}
+
+bool NetworkManager::checkMessageForExit(QString message)
+{
+    //check for exit bytes
+    if (message.contains("exit"))
+        return true;
+    return false;
+}
+
+void NetworkManager::writeToSocket(QString message)
+{
+    if (_clientSocket->isOpen())
+    {
+        message.prepend("Server: ");
+        message.append("\r\n");
+        _clientSocket->write(message.toStdString().c_str());
+        _clientSocket->flush();
+        emit sendBytesToMessageLog(message);
+    }
+}
+
+void NetworkManager::sendCurrentPacket()
+{
+    if (_clientSocket->isOpen())
+    {
+        _packetManager->prependMessage("Server: ");
+        _packetManager->appendMessage("\r\n");
+        QByteArray bytes(_packetManager->pack());
+        _clientSocket->write(bytes.data(), bytes.size() + 1);
+        _clientSocket->waitForBytesWritten();
+        _clientSocket->flush();
+    }
 }
 
 NetworkManager::~NetworkManager()

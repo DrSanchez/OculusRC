@@ -4,7 +4,8 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QTcpServer>
-#include <QByteArray>
+#include <QBuffer>
+#include "packetmanager.h"
 
 class NetworkManager : public QObject
 {
@@ -17,6 +18,9 @@ public:
 
     //public cleanup method
     void Destroy();
+    void writeToSocket(QString message);
+
+    void sendCurrentPacket();
 
 signals:
     void sendBytesToMessageLog(QString message);
@@ -29,9 +33,11 @@ private:
     //private members
     QTcpServer * _server;
     QTcpSocket * _clientSocket;
+    PacketManager * _packetManager;
 
     //private methods
     bool checkBytesForExit(QByteArray bytes);
+    bool checkMessageForExit(QString message);
 
 };
 
