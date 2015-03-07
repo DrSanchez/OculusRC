@@ -1,12 +1,25 @@
+
 #include <QtGui/QScreen>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "steeringwheelcontroller.h"
 #include "clientnetworkmanager.h"
+//#include "oculusmanager.h"
+#include <QDebug>
+
+#include <QmlVlc.h>
+#include <QmlVlc/QmlVlcConfig.h>
 
 int main(int argc, char *argv[])
 {
+    //create and register qml vlc types
+    RegisterQmlVlc();
+    QmlVlcConfig::enableAdjustFilter( true );
+    QmlVlcConfig::enableMarqueeFilter( true );
+    QmlVlcConfig::enableLogoFilter( true );
+    QmlVlcConfig::enableDebug( true );
+
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
     QScreen * screen = app.primaryScreen();
@@ -24,10 +37,10 @@ int main(int argc, char *argv[])
         screenWidth = screen->availableGeometry().width();
         screenHeight = screen->availableGeometry().height();
     }
-
+    //OculusManager * oculusManager = new OculusManager();
     SteeringWheelController * wheelController = new SteeringWheelController(0);
     ClientNetworkManager * clientNetwork = new ClientNetworkManager(wheelController);
-    wheelController->startPolling(20);
+    wheelController->startPolling(50);
     engine.rootContext()->setContextProperty("ClientNetwork", clientNetwork);
     engine.rootContext()->setContextProperty("SteeringWheel", wheelController);
     engine.rootContext()->setContextProperty("ScreenWidth", screenWidth);

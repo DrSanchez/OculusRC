@@ -1,13 +1,14 @@
 TEMPLATE = app
 
-QT += qml quick
+QT += qml quick opengl multimedia
 
 SOURCES += Source/main.cpp \
     Source/steeringwheelcontroller.cpp \
     Source/controllermanager.cpp \
     Source/xinputcontrolstate.cpp \
     Source/clientnetworkmanager.cpp \
-    Source/packetmanager.cpp
+    Source/packetmanager.cpp \
+    Source/oculusmanager.cpp
 
 RESOURCES += $${_PRO_FILE_PWD_}/QML/qml.qrc \
     $${_PRO_FILE_PWD_}/ApplicationImages/ApplicationImages.qrc \
@@ -22,6 +23,7 @@ QML_IMPORT_PATH =
 
 # Default rules for deployment.
 include(deployment.pri)
+include(QmlVlc/QmlVlc.pri)
 
 HEADERS += \
     Include/steeringwheelcontroller.h \
@@ -29,12 +31,16 @@ HEADERS += \
     Include/controllermanager.h \
     Include/xinputcontrolstate.h \
     Include/clientnetworkmanager.h \
-    Include/packetmanager.h
+    Include/packetmanager.h \
+    Include/oculusmanager.h
 
-# Todo: Add oculus sdk libraries and headers
+win32:INCLUDEPATH += $${_PRO_FILE_PWD_}/Include \
+		     $${_PRO_FILE_PWD_}/libvlc-sdk/include/
 
-win32:INCLUDEPATH += $${_PRO_FILE_PWD_}/Include
-win32:LIBS += $${_PRO_FILE_PWD_}/Libraries/XInput.lib
+win32:LIBS += $${_PRO_FILE_PWD_}/Libraries/XInput.lib \
+	      $${_PRO_FILE_PWD_}/libvlc-sdk/lib/libvlc.lib \
+	      $${_PRO_FILE_PWD_}/libvlc-sdk/lib/libvlccore.lib
 
-OTHER_FILES += \
-    $${_PRO_FILE_PWD_}/XInput.lib
+#win32:INCLUDEPATH += C:/Users/Jack/OculusSDK/LibOVR/Include
+#win32:INCLUDEPATH += C:/Users/Jack/OculusSDK/LibOVR/Src
+#win32:LIBS += $${_PRO_FILE_PWD_}/Libraries/libovr.lib

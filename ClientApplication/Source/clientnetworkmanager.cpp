@@ -27,7 +27,7 @@ void ClientNetworkManager::connectToJetson()
 
     qDebug() << "Connecting to Jetson...";
 
-    _socket->connectToHost(jetsonIP, jetsonPort);
+    _socket->connectToHost(_jetsonIP, _jetsonPort);
 
     if (!_socket->waitForConnected(5000))
     {
@@ -125,10 +125,57 @@ void ClientNetworkManager::sendCurrentPacket()
         _socket->write(bytes.data(), bytes.size() + 1);
         _socket->waitForBytesWritten();
         _socket->flush();
+        _packetizer->clearMessage();
     }
 }
 
 void ClientNetworkManager::handleNewControlData()
 {
     sendCurrentPacket();
+}
+
+QString ClientNetworkManager::jetsonIP()
+{
+    return _jetsonIP;
+}
+
+int ClientNetworkManager::jetsonPort()
+{
+    return _jetsonPort;
+}
+
+AppState ClientNetworkManager::appState()
+{
+    return _state;
+}
+
+void ClientNetworkManager::setAppState(int stateValue)
+{
+    AppState next = MENU;
+
+    if (stateValue == 0)
+        next = MENU;
+    else if (stateValue == 1)
+        next = DRIVE;
+    else
+        qDebug() << "Invalid state value..... try again...";
+
+    if (_state != next)
+    {
+        _state = next;
+        emit appStateChanged();
+    }
+}
+
+void ClientNetworkManager::setMessage(QString message)
+{
+    _packetizer->setMessage(message);
+}
+
+void ClientNetworkManager::toggleAppState()
+{
+    if (_state == MENU)
+        _state = DRIVE;
+    else if (_state == DRIVE)
+        _state = MENU;
 }

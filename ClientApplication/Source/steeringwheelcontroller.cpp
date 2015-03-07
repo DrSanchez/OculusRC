@@ -27,6 +27,7 @@ void SteeringWheelController::connectDefaultSignals()
     connect(_previousState, &XInputControlState::dPadDownChanged, this, &SteeringWheelController::sendDownArrowKeySignal);
     connect(_previousState, &XInputControlState::dPadLeftChanged, this, &SteeringWheelController::sendLeftArrowKeySignal);
     connect(_previousState, &XInputControlState::dPadRightChanged, this, &SteeringWheelController::sendRightArrowKeySignal);
+    connect(_previousState, &XInputControlState::buttonSelectChanged, this, &SteeringWheelController::sendEscapeKeySignal);
 }
 
 void SteeringWheelController::sendEnterKeySignal(int value)
@@ -66,6 +67,17 @@ void SteeringWheelController::sendUpArrowKeySignal(int value)
 {
     QKeyEvent event1(QEvent::KeyPress, Qt::Key_Up, Qt::NoModifier);
     QKeyEvent event2(QEvent::KeyRelease, Qt::Key_Up, Qt::NoModifier);
+    QQuickItem * receiver = qobject_cast<QQuickItem *>(QGuiApplication::focusObject());
+    if (value == 0)
+        receiver->window()->sendEvent(receiver, &event1);
+    else if (value == 1)
+        receiver->window()->sendEvent(receiver, &event2);
+}
+
+void SteeringWheelController::sendEscapeKeySignal(int value)
+{
+    QKeyEvent event1(QEvent::KeyPress, Qt::Key_Escape, Qt::NoModifier);
+    QKeyEvent event2(QEvent::KeyRelease, Qt::Key_Escape, Qt::NoModifier);
     QQuickItem * receiver = qobject_cast<QQuickItem *>(QGuiApplication::focusObject());
     if (value == 0)
         receiver->window()->sendEvent(receiver, &event1);

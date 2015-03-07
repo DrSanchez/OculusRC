@@ -49,6 +49,10 @@ public:
     void appendToMessage(QString more);
     void prependToMessage(QString more);
 
+    //message reset method
+    void clearMessage();
+
+    //debug method
     void unpackDebugOut();
 
     //pack/unpack methods

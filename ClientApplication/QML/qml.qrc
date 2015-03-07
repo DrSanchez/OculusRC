@@ -19,5 +19,6 @@
         <file>ESCSettings.qml</file>
         <file>DriveMenu.qml</file>
         <file>MessageAlertBox.qml</file>
+        <file>VideoViewer.qml</file>
     </qresource>
 </RCC>

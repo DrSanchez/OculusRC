@@ -25,8 +25,8 @@ FocusScope
         visible: true
         minimumHeight: 480
         minimumWidth: minimumHeight * 1.4
-        width: ScreenWidth * 0.72
-        height: ScreenHeight * 0.72
+        width: ScreenWidth * 0.88
+        height: ScreenHeight * 0.88
         visibility:
         {
             if (ShowFullscreen)
@@ -58,6 +58,7 @@ FocusScope
             }
             else if (customState == "DRIVE")
             {
+                //ClientNetwork.setMessage("camStart");
                 driveMenu.visible = true;
                 //calibrateMenu.visible = false;
                 //testMenu.visible = false;

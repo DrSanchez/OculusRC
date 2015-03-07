@@ -108,16 +108,10 @@ void PacketManager::prependToMessage(QString more)
 
 void PacketManager::updateControlData(double steeringValue, double throttle, bool direction, bool boost)
 {
-    if (_clientPack->_steeringAngle != steeringValue ||
-        _clientPack->_throttle != throttle ||
-        _clientPack->_forward != direction ||
-        _clientPack->_boost != boost)
-    {
-        setSteeringAngleFromController(steeringValue);
-        setThrottleDirection(throttle, direction);
-        setBoost(boost);
-        emit packetChanged();
-    }
+    setSteeringAngleFromController(steeringValue);
+    setThrottleDirection(throttle, direction);
+    setBoost(boost);
+    emit packetChanged();
 }
 
 void PacketManager::unpackDebugOut()
@@ -127,4 +121,10 @@ void PacketManager::unpackDebugOut()
     qDebug() << "Pitch: " << _serverPack->_pitch;
     qDebug() << "Roll: " << _serverPack->_roll;
     qDebug() << "Message: " << _serverPack->_message;
+}
+
+void PacketManager::clearMessage()
+{
+    _clientPack->_message = "";
+    _serverPack->_message = "";
 }

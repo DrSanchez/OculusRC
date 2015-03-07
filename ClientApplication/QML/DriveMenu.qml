@@ -115,6 +115,11 @@ Image
         }
     }
 
+    VideoViewer
+    {
+        id: videoViewer
+    }
+
     GeneralButton
     {
         id: goButton
@@ -131,18 +136,21 @@ Image
         {
             //oculusConnectionStatus needs to be added when video is started
             //drive menu in drive mode will display standard views of camera feeds
-            //
             if (serverConnectionStatus && controllerConnectionStatus)
             {
-                SteeringWheel.driveMode = true;
+                videoViewer.setDefaultFocus();
             }
             else
             {
-                SteeringWheel.driveMode = true;
                 clientMain.customState = "ALERT";
-                alertBox.showBox(3, "Drive Check Failure",
-                                 "Not all systems are ready to drive the RC. Please ensure all connections are properly established.",
-                                 "DRIVE");
+                if (!serverConnectionStatus)
+                    alertBox.showBox(3, "Jetson Not Connected",
+                             "Must be connected to Jetson board to do anything.",
+                             "DRIVE");
+                else if (!controllerConnectionStatus)
+                    alertBox.showBox(3, "No Controller Detected",
+                             "Need to have a controller connected to use the RC.",
+                             "DRIVE");
             }
         }
     }
@@ -158,6 +166,10 @@ Image
         KeyNavigation.left: goButton
         KeyNavigation.right: goButton
 
-        Keys.onReturnPressed: clientMain.customState = "HOME"
+        Keys.onReturnPressed:
+        {
+            //ClientNetwork.setMessage("camStop");
+            clientMain.customState = "HOME"
+        }
     }
 }

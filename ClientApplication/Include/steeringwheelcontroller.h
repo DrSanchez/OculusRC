@@ -63,6 +63,7 @@ public slots:
     void sendRightArrowKeySignal(int value);
     void sendUpArrowKeySignal(int value);
     void sendDownArrowKeySignal(int value);
+    void sendEscapeKeySignal(int value);
 
 private:
     //private methods

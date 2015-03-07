@@ -13,14 +13,17 @@
 #include "steeringwheelcontroller.h"
 
 //Default Jetson Home IP: 192.168.2.4
-static const QString jetsonIP = "192.168.2.4";
+const QString _jetsonIP = "192.168.2.4";
 //Default Jetson Server Port: 9999
-static const int jetsonPort = 9999;
+const int _jetsonPort = 9999;
 
 class ClientNetworkManager : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool connected READ connected NOTIFY connectedChanged)
+    Q_PROPERTY(QString JetsonIP READ jetsonIP NOTIFY jetsonIPChanged)
+    Q_PROPERTY(int JetsonPort READ jetsonPort NOTIFY jetsonPortChanged)
+    Q_PROPERTY(AppState state READ appState WRITE setAppState NOTIFY appStateChanged)
 
 public:
     //constructors and destructors
@@ -28,10 +31,16 @@ public:
 
     //QML property read methods
     bool connected();
+    QString jetsonIP();
+    int jetsonPort();
+    AppState appState();
+    void setAppState(int stateValue);
 
     //public methods exposed to QML
     Q_INVOKABLE void connectToJetson();
     Q_INVOKABLE void disconnectFromJetson();
+    Q_INVOKABLE void setMessage(QString message);
+    Q_INVOKABLE void toggleAppState();
 
     //public send packet method
     void sendCurrentPacket();
@@ -40,6 +49,9 @@ signals:
     //QML property signals
     void connectedChanged();
     void networkError(int priority, QString message);
+    void jetsonIPChanged();
+    void jetsonPortChanged();
+    void appStateChanged();
 
 public slots:
     //tcp socket signal handlers
@@ -59,6 +71,7 @@ private:
     bool _connected;
     PacketManager * _packetizer;
     SteeringWheelController * _controller;
+    AppState _state;
 
 };
 

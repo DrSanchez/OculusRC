@@ -54,7 +54,7 @@ Rectangle
         {
             alwaysRunToEnd:  true
             duration: 300
-            spring: 1;
+            spring: 1
             damping: .18
         }
     }
