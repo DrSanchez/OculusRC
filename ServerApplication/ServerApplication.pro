@@ -10,7 +10,10 @@ QML_IMPORT_PATH =
 SOURCES += main.cpp \
     networkmanager.cpp \
     cameracontroller.cpp \
-    packetmanager.cpp
+    packetmanager.cpp \
+    pwmcontroller.cpp \
+    motorcontroller.cpp \
+    rcmanager.cpp
 
 QMAKE_CXXFLAGS += -std=c++11
 
@@ -24,4 +27,7 @@ qtcAddDeployment()
 HEADERS += \
     networkmanager.h \
     cameracontroller.h \
-    packetmanager.h
+    packetmanager.h \
+    pwmcontroller.h \
+    motorcontroller.h \
+    rcmanager.h

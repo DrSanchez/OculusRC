@@ -128,5 +128,9 @@ void PacketManager::unpackDebugOut()
     qDebug() << "Message: " << _clientPack->_message;
 }
 
-
+void PacketManager::clearMessage()
+{
+    _clientPack->_message = "";
+    _serverPack->_message = "";
+}
 

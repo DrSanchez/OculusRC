@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtMultimedia 5.0
 
 Rectangle
 {
@@ -78,6 +79,7 @@ Rectangle
                 width: editorView.width
                 height: editorView.height
                 wrapMode: TextEdit.Wrap
+                onContentSizeChanged: editorView.ensureVisible(cursorRectangle)
                 onCursorRectangleChanged: editorView.ensureVisible(cursorRectangle)
                 textMargin: 5
             }
@@ -109,6 +111,7 @@ Rectangle
             anchors.fill: parent
             onClicked:
             {
+                NetworkManager.customDestroy();
                 Qt.quit();
             }
         }

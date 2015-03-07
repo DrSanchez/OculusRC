@@ -2,14 +2,23 @@
 #include <QDebug>
 
 NetworkManager::NetworkManager(QObject *parent)
-    : QObject(parent), _packetManager(nullptr)
+    : QObject(parent), _server(nullptr), _clientSocket(nullptr),
+      _packetManager(nullptr), _rc(nullptr), _driveMode(false),
+      _camManager(nullptr)
 {
     //object allocation
-    _packetManager = new PacketManager(this);
     _server = new QTcpServer(this);
+    _packetManager = new PacketManager(this);
+    _rc = new RCManager(this);
+    _camManager = new CameraController(this);
+    _camManager->start();
 
     //tied newConnection handler to server signal
     connect(_server, &QTcpServer::newConnection, this, &NetworkManager::newConnection);
+
+    //connect rc signals
+    connect(this, &NetworkManager::startDriving, _rc, &RCManager::InitializeRCSystem);
+    connect(this, &NetworkManager::stopDriving, _rc, &RCManager::DeactivateRCSystem);
 
     //start server listening
     if (!_server->listen(QHostAddress::Any, 9999))
@@ -24,8 +33,9 @@ NetworkManager::NetworkManager(QObject *parent)
     }
 }
 
-void NetworkManager::Destroy()
+void NetworkManager::customDestroy()
 {
+    _camManager->stop();
     //check client socket exists
     if (_clientSocket != nullptr)
     {//is socket active?
@@ -41,6 +51,8 @@ void NetworkManager::Destroy()
         delete _server;
         _server = nullptr;
     }
+    delete _camManager;
+    delete _rc;
     emit sendBytesToMessageLog("Server and socket destroyed...");
 }
 
@@ -54,7 +66,7 @@ void NetworkManager::readClientBytes()
         ClientPacket * packet = _packetManager->unpack(bytes);
         if (packet != nullptr)
         {
-            qDebug() << "unpacked message: " << packet->_message;
+            //debug
             QString steering = QString::number(packet->_steeringAngle);
             QString throttle = QString::number(packet->_throttle);
             QString direction = (packet->_forward ? "Forward" : "Reverse");
@@ -63,13 +75,22 @@ void NetworkManager::readClientBytes()
                                        "\nThrottle: " + throttle + "\nDirection: " + direction +
                                        "\nBoost: " + boost + '\n';
             emit sendBytesToMessageLog(clientPacketData);
+            //end debug
+
+            //check drive mode
+            driveModeSet(packet->_state);
+
+            //check for cam enable
+            //checkForCamStart(packet->_message);
+            //checkForCamStop(packet->_message);
+
         }
         else if (packet == nullptr)
             qDebug() << "something bad happened";
 
         //close server if bytes contain exit bytes
-        if(checkMessageForExit(_packetManager->getMessage()))
-            Destroy();
+        if(checkMessageForExit(packet->_message))
+            customDestroy();
     }
 }
 
@@ -83,8 +104,6 @@ void NetworkManager::newConnection()
 
     qDebug() << "In new connection...";
     emit sendBytesToMessageLog("In new connection...\r\n");
-    bool test = true;
-    emit sendBytesToMessageLog((test == true ? QString::number(test) : "false"));
 
     //write hello message to client socket
     _packetManager->setMessage("Hello Client");
@@ -110,6 +129,41 @@ bool NetworkManager::checkMessageForExit(QString message)
     return false;
 }
 
+void NetworkManager::driveModeSet(AppState state)
+{
+    bool currentDriveValue;
+    if (state == MENU)
+        currentDriveValue = false;
+    else if (state == DRIVE)
+        currentDriveValue = true;
+    //stored value for drive mode is the previous
+    if (_driveMode != currentDriveValue)
+    {
+        _driveMode = currentDriveValue;
+        emit (currentDriveValue ? startDriving() : stopDriving());
+    }
+}
+
+bool NetworkManager::checkForCamStart(QString message)
+{
+    if (message.contains("camStart"))
+    {
+        _camManager->start();
+        return true;
+    }
+    return false;
+}
+
+bool NetworkManager::checkForCamStop(QString message)
+{
+    if (message.contains("camStop"))
+    {
+        _camManager->stop();
+        return true;
+    }
+    return false;
+}
+
 void NetworkManager::writeToSocket(QString message)
 {
     if (_clientSocket->isOpen())
@@ -132,6 +186,7 @@ void NetworkManager::sendCurrentPacket()
         _clientSocket->write(bytes.data(), bytes.size() + 1);
         _clientSocket->waitForBytesWritten();
         _clientSocket->flush();
+        _packetManager->clearMessage();
     }
 }
 
@@ -153,3 +208,4 @@ NetworkManager::~NetworkManager()
         _server = nullptr;
     }
 }
+

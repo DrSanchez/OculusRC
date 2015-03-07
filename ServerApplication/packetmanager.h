@@ -45,6 +45,8 @@ public:
     void appendMessage(QString message);
     void setSensorData(double yaw, double roll, double pitch);
 
+    void clearMessage();
+
     //packet data getters
     AppState getState();
     double getSteeringAngle();
