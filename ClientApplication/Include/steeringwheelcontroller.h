@@ -38,6 +38,7 @@ public:
     void setDriveMode(bool set);
     bool driveMode();
     void sendRemoteControlData();
+    bool controlsChanged();
 
 signals:
     void newControllerBatteryState(quint8 newBatteryType, quint8 newBatteryLevel);

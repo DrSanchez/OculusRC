@@ -36,7 +36,7 @@ void ClientNetworkManager::connectToJetson()
     }
     else
     {
-        _packetizer->setState(MENU);
+        _packetizer->setState(0);
         _packetizer->setSteeringAngle(0.0);
         _packetizer->setThrottleDirection(0.0, true);
         _packetizer->setBoost(false);
@@ -49,7 +49,7 @@ void ClientNetworkManager::disconnectFromJetson()
 {
     if (_socket->isOpen())
     {
-        writeToSocket("Goodbyte server...exit now");
+        writeToSocket("Goodbye server...exit now");
         if (!_socket->waitForBytesWritten(5000))
         {
             qDebug() << "Something bad happened on disconnect...";
@@ -144,25 +144,17 @@ int ClientNetworkManager::jetsonPort()
     return _jetsonPort;
 }
 
-AppState ClientNetworkManager::appState()
+int ClientNetworkManager::appState()
 {
     return _state;
 }
 
 void ClientNetworkManager::setAppState(int stateValue)
 {
-    AppState next = MENU;
-
-    if (stateValue == 0)
-        next = MENU;
-    else if (stateValue == 1)
-        next = DRIVE;
-    else
-        qDebug() << "Invalid state value..... try again...";
-
-    if (_state != next)
+    if (_state != stateValue)
     {
-        _state = next;
+        _state = stateValue;
+        _packetizer->setState(_state);
         emit appStateChanged();
     }
 }
@@ -172,10 +164,3 @@ void ClientNetworkManager::setMessage(QString message)
     _packetizer->setMessage(message);
 }
 
-void ClientNetworkManager::toggleAppState()
-{
-    if (_state == MENU)
-        _state = DRIVE;
-    else if (_state == DRIVE)
-        _state = MENU;
-}

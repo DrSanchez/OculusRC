@@ -5,7 +5,7 @@ PacketManager::PacketManager(QObject *parent) :
     QObject(parent), _clientPack(nullptr), _serverPack(nullptr)
 {
     _clientPack = new ClientPacket();
-    _clientPack->_state = MENU;
+    _clientPack->_state = 0;
     _clientPack->_steeringAngle = 0.0;
     _clientPack->_throttle = 0.0;
     _clientPack->_forward = true;
@@ -18,7 +18,7 @@ PacketManager::PacketManager(QObject *parent) :
     _serverPack->_message = "";
 }
 
-void PacketManager::setState(AppState state)
+void PacketManager::setState(int state)
 {
     _clientPack->_state = state;
 }
@@ -108,7 +108,8 @@ void PacketManager::prependToMessage(QString more)
 
 void PacketManager::updateControlData(double steeringValue, double throttle, bool direction, bool boost)
 {
-    setSteeringAngleFromController(steeringValue);
+    //setSteeringAngleFromController(steeringValue);
+    setSteeringAngle(steeringValue);
     setThrottleDirection(throttle, direction);
     setBoost(boost);
     emit packetChanged();

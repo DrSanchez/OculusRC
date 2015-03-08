@@ -23,14 +23,14 @@ Rectangle
     {
         toExpanded.start();
         viewerContainer.focus = true;
-        ClientNetwork.toggleAppState();
+        ClientNetwork.state = 1;
         SteeringWheel.driveMode = true;
     }
 
     Keys.onEscapePressed:
     {
         toPreview.start();
-        ClientNetwork.toggleAppState();
+        ClientNetwork.state = 0;
         SteeringWheel.driveMode = false;
         //we guarantee the driveMenu was the previous menu
         driveMenu.setDefaultFocus();

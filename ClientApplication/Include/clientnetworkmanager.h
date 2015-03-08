@@ -23,7 +23,7 @@ class ClientNetworkManager : public QObject
     Q_PROPERTY(bool connected READ connected NOTIFY connectedChanged)
     Q_PROPERTY(QString JetsonIP READ jetsonIP NOTIFY jetsonIPChanged)
     Q_PROPERTY(int JetsonPort READ jetsonPort NOTIFY jetsonPortChanged)
-    Q_PROPERTY(AppState state READ appState WRITE setAppState NOTIFY appStateChanged)
+    Q_PROPERTY(int state READ appState WRITE setAppState NOTIFY appStateChanged)
 
 public:
     //constructors and destructors
@@ -33,14 +33,13 @@ public:
     bool connected();
     QString jetsonIP();
     int jetsonPort();
-    AppState appState();
+    int appState();
     void setAppState(int stateValue);
 
     //public methods exposed to QML
     Q_INVOKABLE void connectToJetson();
     Q_INVOKABLE void disconnectFromJetson();
     Q_INVOKABLE void setMessage(QString message);
-    Q_INVOKABLE void toggleAppState();
 
     //public send packet method
     void sendCurrentPacket();
@@ -71,7 +70,7 @@ private:
     bool _connected;
     PacketManager * _packetizer;
     SteeringWheelController * _controller;
-    AppState _state;
+    int _state;
 
 };
 

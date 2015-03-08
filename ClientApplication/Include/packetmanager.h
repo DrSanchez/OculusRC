@@ -13,10 +13,9 @@ const static char CLIENT_TAG = '$';
 const static char BYTE_SPLIT = '|';
 
 //public packet structure
-enum AppState { MENU, DRIVE };
 struct ClientPacket
 {
-    AppState _state;
+    int _state;//0 == menu, 1 == drive
     double _steeringAngle;
     double _throttle;
     bool _forward;
@@ -41,7 +40,7 @@ public:
     void setSteeringAngleFromController(double controllerValue);
 
     //Packet data setters
-    void setState(AppState state);
+    void setState(int state);
     void setSteeringAngle(double angle);
     void setThrottleDirection(double throttle, bool forward);
     void setBoost(bool boost);
