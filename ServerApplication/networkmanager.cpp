@@ -3,15 +3,15 @@
 
 NetworkManager::NetworkManager(QObject *parent)
     : QObject(parent), _server(nullptr), _clientSocket(nullptr),
-      _packetManager(nullptr), _rc(nullptr), _driveMode(false),
-      _camManager(nullptr)
+      _packetManager(nullptr), _rc(nullptr), _driveMode(false)//,
+      //_camManager(nullptr)
 {
     //object allocation
     _server = new QTcpServer(this);
     _packetManager = new PacketManager(this);
     _rc = new RCManager(this);
-    _camManager = new CameraController(this);
-    _camManager->start();
+    //_camManager = new CameraController(this);
+    //_camManager->start();
 
     //tied newConnection handler to server signal
     connect(_server, &QTcpServer::newConnection, this, &NetworkManager::newConnection);
@@ -19,6 +19,7 @@ NetworkManager::NetworkManager(QObject *parent)
     //connect rc signals
     connect(this, &NetworkManager::startDriving, _rc, &RCManager::InitializeRCSystem);
     connect(this, &NetworkManager::stopDriving, _rc, &RCManager::DeactivateRCSystem);
+    connect(this, &NetworkManager::updateRC, _rc, &RCManager::applyUpdate);
 
     //start server listening
     if (!_server->listen(QHostAddress::Any, 9999))
@@ -35,7 +36,7 @@ NetworkManager::NetworkManager(QObject *parent)
 
 void NetworkManager::customDestroy()
 {
-    _camManager->stop();
+ //   _camManager->stop();
     //check client socket exists
     if (_clientSocket != nullptr)
     {//is socket active?
@@ -51,7 +52,7 @@ void NetworkManager::customDestroy()
         delete _server;
         _server = nullptr;
     }
-    delete _camManager;
+ //   delete _camManager;
     delete _rc;
     emit sendBytesToMessageLog("Server and socket destroyed...");
 }
@@ -80,17 +81,27 @@ void NetworkManager::readClientBytes()
             //check drive mode
             driveModeSet(packet->_state);
 
+            if (_driveMode)
+            {
+                if (packet->_forward == false)
+                    packet->_throttle = -(packet->_throttle);
+                emit updateRC(packet->_steeringAngle, packet->_throttle);//add boost later
+            }
+
             //check for cam enable
             //checkForCamStart(packet->_message);
             //checkForCamStop(packet->_message);
 
+            //close server if bytes contain exit bytes
+            if(checkMessageForExit(packet->_message))
+                customDestroy();
         }
         else if (packet == nullptr)
+        {
             qDebug() << "something bad happened";
+            qDebug() << bytes;
+        }
 
-        //close server if bytes contain exit bytes
-        if(checkMessageForExit(packet->_message))
-            customDestroy();
     }
 }
 
@@ -129,40 +140,44 @@ bool NetworkManager::checkMessageForExit(QString message)
     return false;
 }
 
-void NetworkManager::driveModeSet(AppState state)
+void NetworkManager::driveModeSet(int state)
 {
-    bool currentDriveValue;
-    if (state == MENU)
+    bool currentDriveValue = false;
+    if (state == 0)
         currentDriveValue = false;
-    else if (state == DRIVE)
+    else if (state == 1)
         currentDriveValue = true;
+    qDebug() << state;
     //stored value for drive mode is the previous
     if (_driveMode != currentDriveValue)
     {
         _driveMode = currentDriveValue;
-        emit (currentDriveValue ? startDriving() : stopDriving());
+        if (currentDriveValue)
+            emit startDriving();
+        else
+            emit stopDriving();
     }
 }
 
-bool NetworkManager::checkForCamStart(QString message)
-{
-    if (message.contains("camStart"))
-    {
-        _camManager->start();
-        return true;
-    }
-    return false;
-}
+//bool NetworkManager::checkForCamStart(QString message)
+//{
+//    if (message.contains("camStart"))
+//    {
+//        _camManager->start();
+//        return true;
+//    }
+//    return false;
+//}
 
-bool NetworkManager::checkForCamStop(QString message)
-{
-    if (message.contains("camStop"))
-    {
-        _camManager->stop();
-        return true;
-    }
-    return false;
-}
+//bool NetworkManager::checkForCamStop(QString message)
+//{
+//    if (message.contains("camStop"))
+//    {
+//        _camManager->stop();
+//        return true;
+//    }
+//    return false;
+//}
 
 void NetworkManager::writeToSocket(QString message)
 {

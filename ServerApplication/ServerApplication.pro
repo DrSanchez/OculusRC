@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     packetmanager.cpp \
     pwmcontroller.cpp \
     motorcontroller.cpp \
-    rcmanager.cpp
+    rcmanager.cpp \
+    servocontroller.cpp
 
 QMAKE_CXXFLAGS += -std=c++11
 
@@ -30,4 +31,5 @@ HEADERS += \
     packetmanager.h \
     pwmcontroller.h \
     motorcontroller.h \
-    rcmanager.h
+    rcmanager.h \
+    servocontroller.h

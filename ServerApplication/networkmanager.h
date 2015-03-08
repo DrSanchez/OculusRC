@@ -7,7 +7,7 @@
 #include <QBuffer>
 #include "packetmanager.h"
 #include "rcmanager.h"
-#include "cameracontroller.h"
+//#include "cameracontroller.h"
 
 class NetworkManager : public QObject
 {
@@ -28,6 +28,7 @@ signals:
     void sendBytesToMessageLog(QString message);
     void startDriving();
     void stopDriving();
+    void updateRC(double steeringAngle, double throttle);//add boost later
 
 public slots:
     void newConnection();
@@ -40,14 +41,14 @@ private:
     PacketManager * _packetManager;
     RCManager * _rc;
     bool _driveMode;
-    CameraController * _camManager;
+   // CameraController * _camManager;
 
     //private methods
-    void driveModeSet(AppState state);
+    void driveModeSet(int state);
     bool checkBytesForExit(QByteArray bytes);
     bool checkMessageForExit(QString message);
-    bool checkForCamStart(QString message);
-    bool checkForCamStop(QString message);
+   // bool checkForCamStart(QString message);
+   // bool checkForCamStop(QString message);
 
 };
 

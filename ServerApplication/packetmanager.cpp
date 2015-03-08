@@ -5,7 +5,7 @@ PacketManager::PacketManager(QObject *parent)
     : QObject(parent), _clientPack(nullptr), _serverPack(nullptr)
 {
     _clientPack = new ClientPacket();
-    _clientPack->_state = MENU;
+    _clientPack->_state = 0;
     _clientPack->_steeringAngle = 0.0;
     _clientPack->_throttle = 0.0;
     _clientPack->_forward = true;
@@ -36,6 +36,8 @@ QByteArray PacketManager::pack()
 
 ClientPacket * PacketManager::unpack(QByteArray bytes)
 {
+    qDebug() << "Why the fuck are these bytes not working???"
+                << bytes;
     QList<QByteArray> unpackedBytes(bytes.split(BYTE_SPLIT));
     if (!unpackedBytes.isEmpty() && unpackedBytes.size() == 7)
     {
@@ -43,7 +45,7 @@ ClientPacket * PacketManager::unpack(QByteArray bytes)
         if (*(temp.data()) != CLIENT_TAG)
             return nullptr;
         temp = unpackedBytes.takeFirst();
-        _clientPack->_state = (temp.toInt() == 0 ? MENU : DRIVE);
+        _clientPack->_state = temp.toInt();//(temp.toInt() == 0 ? MENU : DRIVE);
         temp = unpackedBytes.takeFirst();
         _clientPack->_steeringAngle = temp.toDouble();
         temp = unpackedBytes.takeFirst();
@@ -58,6 +60,8 @@ ClientPacket * PacketManager::unpack(QByteArray bytes)
     }
     else
     {
+        qDebug() << unpackedBytes.size();
+        qDebug() << bytes;
         qDebug() << "Invalid byte data passed...";
         return nullptr;
     }
@@ -87,7 +91,7 @@ void PacketManager::setSensorData(double yaw, double roll, double pitch)
     emit packetChanged();
 }
 
-AppState PacketManager::getState()
+int PacketManager::getState()
 {
     return _clientPack->_state;
 }

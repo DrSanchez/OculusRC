@@ -11,10 +11,9 @@ const static char CLIENT_TAG = '$';
 const static char BYTE_SPLIT = '|';
 
 //public packet structure
-enum AppState { MENU, DRIVE };
 struct ClientPacket
 {
-    AppState _state;
+    int _state;
     double _steeringAngle;
     double _throttle;
     bool _forward;
@@ -48,7 +47,7 @@ public:
     void clearMessage();
 
     //packet data getters
-    AppState getState();
+    int getState();
     double getSteeringAngle();
     double getThrottle();
     bool getDirection();
