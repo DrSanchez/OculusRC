@@ -5,7 +5,10 @@
 #include <QQmlContext>
 #include "steeringwheelcontroller.h"
 #include "clientnetworkmanager.h"
+
+/* Include when Oculus features are implemented */
 //#include "oculusmanager.h"
+
 #include <QDebug>
 
 #include <QmlVlc.h>
@@ -37,7 +40,12 @@ int main(int argc, char *argv[])
         screenWidth = screen->availableGeometry().width();
         screenHeight = screen->availableGeometry().height();
     }
+
+    /* The Oculus/OpenGL sections of the application are not ***********
+    ** yet implemented, uncomment this instantiation when appropriate */
     //OculusManager * oculusManager = new OculusManager();
+
+
     SteeringWheelController * wheelController = new SteeringWheelController(0);
     ClientNetworkManager * clientNetwork = new ClientNetworkManager(wheelController);
     wheelController->startPolling(50);

@@ -35,12 +35,10 @@ HEADERS += \
     Include/oculusmanager.h
 
 win32:INCLUDEPATH += $${_PRO_FILE_PWD_}/Include \
-		     $${_PRO_FILE_PWD_}/libvlc-sdk/include/
+		     $${_PRO_FILE_PWD_}/libvlc-sdk/include/ \
+		     C:/Users/Jack/Documents/libovr/LibOVR/Include/
 
 win32:LIBS += $${_PRO_FILE_PWD_}/Libraries/XInput.lib \
 	      $${_PRO_FILE_PWD_}/libvlc-sdk/lib/libvlc.lib \
-	      $${_PRO_FILE_PWD_}/libvlc-sdk/lib/libvlccore.lib
-
-#win32:INCLUDEPATH += C:/Users/Jack/OculusSDK/LibOVR/Include
-#win32:INCLUDEPATH += C:/Users/Jack/OculusSDK/LibOVR/Src
-#win32:LIBS += $${_PRO_FILE_PWD_}/Libraries/libovr.lib
+	      $${_PRO_FILE_PWD_}/libvlc-sdk/lib/libvlccore.lib \
+	      C:/Users/Jack/Documents/libovr/build_libovr/LibOVR/libovr.a -Libovr -lgdi32 -lwinmm -lsetupapi -lole32 -loleaut32 -lws2_32 -ldbghelp -lkernel32 -luser32

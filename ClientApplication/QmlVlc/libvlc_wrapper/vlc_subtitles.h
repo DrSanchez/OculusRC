@@ -33,7 +33,7 @@ namespace vlc
     {
     public:
         subtitles( vlc::basic_player& player )
-            : _player( player ) {};
+            : _player( player ) {}
 
         unsigned track_count();
 
