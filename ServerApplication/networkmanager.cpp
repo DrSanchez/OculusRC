@@ -159,26 +159,6 @@ void NetworkManager::driveModeSet(int state)
     }
 }
 
-//bool NetworkManager::checkForCamStart(QString message)
-//{
-//    if (message.contains("camStart"))
-//    {
-//        _camManager->start();
-//        return true;
-//    }
-//    return false;
-//}
-
-//bool NetworkManager::checkForCamStop(QString message)
-//{
-//    if (message.contains("camStop"))
-//    {
-//        _camManager->stop();
-//        return true;
-//    }
-//    return false;
-//}
-
 void NetworkManager::writeToSocket(QString message)
 {
     if (_clientSocket->isOpen())

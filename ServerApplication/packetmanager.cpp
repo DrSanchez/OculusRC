@@ -36,8 +36,6 @@ QByteArray PacketManager::pack()
 
 ClientPacket * PacketManager::unpack(QByteArray bytes)
 {
-    qDebug() << "Why the fuck are these bytes not working???"
-                << bytes;
     QList<QByteArray> unpackedBytes(bytes.split(BYTE_SPLIT));
     if (!unpackedBytes.isEmpty() && unpackedBytes.size() == 7)
     {
@@ -45,7 +43,7 @@ ClientPacket * PacketManager::unpack(QByteArray bytes)
         if (*(temp.data()) != CLIENT_TAG)
             return nullptr;
         temp = unpackedBytes.takeFirst();
-        _clientPack->_state = temp.toInt();//(temp.toInt() == 0 ? MENU : DRIVE);
+        _clientPack->_state = temp.toInt();
         temp = unpackedBytes.takeFirst();
         _clientPack->_steeringAngle = temp.toDouble();
         temp = unpackedBytes.takeFirst();
