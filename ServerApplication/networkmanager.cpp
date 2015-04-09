@@ -10,8 +10,6 @@ NetworkManager::NetworkManager(QObject *parent)
     _server = new QTcpServer(this);
     _packetManager = new PacketManager(this);
     _rc = new RCManager(this);
-    //_camManager = new CameraController(this);
-    //_camManager->start();
 
     //tied newConnection handler to server signal
     connect(_server, &QTcpServer::newConnection, this, &NetworkManager::newConnection);
@@ -87,10 +85,6 @@ void NetworkManager::readClientBytes()
                     packet->_throttle = -(packet->_throttle);
                 emit updateRC(packet->_steeringAngle, packet->_throttle);//add boost later
             }
-
-            //check for cam enable
-            //checkForCamStart(packet->_message);
-            //checkForCamStop(packet->_message);
 
             //close server if bytes contain exit bytes
             if(checkMessageForExit(packet->_message))

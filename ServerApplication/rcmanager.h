@@ -4,6 +4,7 @@
 #include <QObject>
 #include "motorcontroller.h"
 #include "servocontroller.h"
+#include "boostcontroller.h"
 
 class RCManager : public QObject
 {
@@ -17,12 +18,20 @@ signals:
 public slots:
     void InitializeRCSystem();
     void DeactivateRCSystem();
-    void applyUpdate(double angle, double throttle);
+    void applyUpdate(double angle, double throttle/*, bool boost*/);
 
 private:
     //private members
     MotorController * _motor;
     ServoController * _servo;
+
+    /*
+    Added boost controller logic. Test in console
+    before adding to the network call procedures.
+    */
+
+    //read usage warnings in header
+    BoostController * _boost;
 
 };
 

@@ -47,8 +47,6 @@ private:
     void driveModeSet(int state);
     bool checkBytesForExit(QByteArray bytes);
     bool checkMessageForExit(QString message);
-   // bool checkForCamStart(QString message);
-   // bool checkForCamStop(QString message);
 
 };
 

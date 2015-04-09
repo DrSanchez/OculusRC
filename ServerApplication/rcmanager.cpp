@@ -2,10 +2,12 @@
 #include <QDebug>
 
 RCManager::RCManager(QObject *parent)
-    : QObject(parent), _motor(nullptr), _servo(nullptr)
+    : QObject(parent), _motor(nullptr), _servo(nullptr),
+      _boost(nullptr)
 {
     _motor = new MotorController(this);
     _servo = new ServoController(this);
+    _boost = new BoostController(this);
 }
 
 RCManager::~RCManager()

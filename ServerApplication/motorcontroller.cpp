@@ -14,6 +14,8 @@ MotorController::MotorController(QObject *parent) :
 MotorController::~MotorController()
 {
     _pwm->unexportPwm();
+    if (_pwm->isEnabled())
+        _pwm->setEnable(false);
     delete _pwm;
     _pwm = nullptr;
 }

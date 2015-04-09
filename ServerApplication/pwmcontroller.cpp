@@ -11,9 +11,6 @@
 //const QString PWM_PERIOD = "/period";
 //const QString PWM_POLARITY = "/polarity";
 
-
-//todo: write setter for pwm index
-
 PWMController::PWMController(int index, QObject *parent)
     : QObject(parent), _sys(nullptr), _pwmIndex(index)
 {
