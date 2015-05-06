@@ -1,6 +1,9 @@
 #ifndef BOOSTCONTROLLER_H
 #define BOOSTCONTROLLER_H
 
+// As of right now, the Motor is too fast to add
+// a booster module...
+
 /************************************************
  * Note: The boost module behavior is relatively
  * undefined. For saftey we leave the object

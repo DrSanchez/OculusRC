@@ -17,6 +17,8 @@ PWMController::PWMController(int index, QObject *parent)
     if (_pwmIndex != 0 || _pwmIndex != 2 || _pwmIndex != 3)
         qDebug() << "Jetson TK1 only supports index values: 0, 2, 3 => please reset the index...";
     _sys = new QFile(this);
+    _duty = new QFile(this);
+    _duty->setFileName(PWM_PATH + PWM_PIN + QString::number(_pwmIndex).toLatin1() + PWM_DUTY);
 }
 
 bool PWMController::exportPwm()
@@ -65,25 +67,28 @@ bool PWMController::unexportPwm()
     }
 }
 
+bool PWMController::openDuty()
+{
+    if (!_duty->isOpen())
+        _duty->open(QIODevice::WriteOnly);
+    else
+        qDebug() << "Duty cycle already open...\n";
+}
+
+bool PWMController::closeDuty()
+{
+    if (_duty->isOpen())
+        _duty->close();
+    else
+        qDebug() << "Duty cycle already closed...\n";
+}
+
 bool PWMController::setDutyCycle(qint32 value)
 {
-    if (isExported())
-    {
-        _sys->setFileName(PWM_PATH + PWM_PIN + QString::number(_pwmIndex).toLatin1() + PWM_DUTY);
-        if (_sys->open(QIODevice::WriteOnly))
-        {
-            _sys->write(QString::number(value).toLatin1());
-            _sys->close();
-            return true;
-        }
-        else
-            return false;
-    }
+    if (_duty->isOpen())
+        _duty->write(QString::number(value).toLatin1());
     else
-    {
-        qDebug() << "PWM index (" << _pwmIndex << ") not exported...";
-        return false;
-    }
+        qDebug() << "Duty cycle is not open...\n";
 }
 
 bool PWMController::setPeriod(qint32 value)

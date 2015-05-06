@@ -34,4 +34,5 @@ HEADERS += \
     motorcontroller.h \
     rcmanager.h \
     servocontroller.h \
-    boostcontroller.h
+    boostcontroller.h \
+    safequeue.h

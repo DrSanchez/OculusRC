@@ -9,7 +9,11 @@ NetworkManager::NetworkManager(QObject *parent)
     //object allocation
     _server = new QTcpServer(this);
     _packetManager = new PacketManager(this);
-    _rc = new RCManager(this);
+    //_mainControlQueue = new QQueue<QByteArray>();
+    //grab global threadpool instance
+    _poolInstance = QThreadPool::globalInstance();
+    //_rc = new RCManager(/*_mainControlQueue,*/ _poolInstance, this);
+
 
     //tied newConnection handler to server signal
     connect(_server, &QTcpServer::newConnection, this, &NetworkManager::newConnection);
@@ -34,6 +38,10 @@ NetworkManager::NetworkManager(QObject *parent)
 
 void NetworkManager::customDestroy()
 {
+    //gonna need something along these lines
+    //threadPool.waitfordone();
+
+
  //   _camManager->stop();
     //check client socket exists
     if (_clientSocket != nullptr)

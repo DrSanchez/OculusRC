@@ -1,14 +1,15 @@
 #include "motorcontroller.h"
 #include <math.h>
 
-MotorController::MotorController(QObject *parent) :
-    QObject(parent), _pwm(nullptr)
+MotorController::MotorController(QQueue<QByteArray> * motorCommandQueue, QObject *parent) :
+    QObject(parent), _pwm(nullptr), _motorCommandQueue(nullptr)
 {
     _pwm = new PWMController(0,this);
     _pwm->exportPwm();
     _pwm->setPeriod(MOTOR_PERIOD_NS);
     _pwm->setDutyCycle(MOTOR_NEUTRAL_DUTY_NS);
     _pwm->setPolarity(NORMAL);
+    _motorCommandQueue = motorCommandQueue;
 }
 
 MotorController::~MotorController()
@@ -29,9 +30,11 @@ void MotorController::setThrottle(double value)
 void MotorController::activate()
 {
     _pwm->setEnable(true);
+    _pwm->openDuty();
 }
 
 void MotorController::deactivate()
 {
+    _pwm->closeDuty();
     _pwm->setEnable(false);
 }

@@ -26,10 +26,14 @@ public:
     //pwm interface methods
     bool exportPwm();
     bool unexportPwm();
-    bool setDutyCycle(qint32 value);
     bool setPeriod(qint32 value);
     bool setEnable(bool enabled);
     bool setPolarity(POLARITY_VALUE value);
+
+    //duty control methods
+    bool openDuty();
+    bool closeDuty();
+    bool setDutyCycle(qint32 value);
 
     //pwm interface check/getter methods
     bool isEnabled();
@@ -46,6 +50,7 @@ public slots:
 private:
     //private data members
     QFile * _sys;
+    QFile * _duty;
     int _pwmIndex;
 };
 

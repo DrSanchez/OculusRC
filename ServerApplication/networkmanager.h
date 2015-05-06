@@ -5,6 +5,7 @@
 #include <QTcpSocket>
 #include <QTcpServer>
 #include <QBuffer>
+#include <QThreadPool>
 #include "packetmanager.h"
 #include "rcmanager.h"
 //#include "cameracontroller.h"
@@ -36,12 +37,12 @@ public slots:
 
 private:
     //private members
+    bool _driveMode;
+    RCManager * _rc;
     QTcpServer * _server;
     QTcpSocket * _clientSocket;
+    QThreadPool * _poolInstance;
     PacketManager * _packetManager;
-    RCManager * _rc;
-    bool _driveMode;
-   // CameraController * _camManager;
 
     //private methods
     void driveModeSet(int state);

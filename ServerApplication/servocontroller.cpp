@@ -28,9 +28,11 @@ void ServoController::setSteering(double angle)
 void ServoController::activate()
 {
     _pwm->setEnable(true);
+    _pwm->openDuty();
 }
 
 void ServoController::deactivate()
 {
+    _pwm->closeDuty();
     _pwm->setEnable(false);
 }

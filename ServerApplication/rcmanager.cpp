@@ -1,13 +1,16 @@
 #include "rcmanager.h"
 #include <QDebug>
 
-RCManager::RCManager(QObject *parent)
+RCManager::RCManager(QQueue<QByteArray> * mainControlQueue, QThreadPool * pool, QObject *parent)
     : QObject(parent), _motor(nullptr), _servo(nullptr),
-      _boost(nullptr)
+      _boost(nullptr), _controlQueuePtr(nullptr),
+      _poolPtr(nullptr)
 {
-    _motor = new MotorController(this);
-    _servo = new ServoController(this);
-    _boost = new BoostController(this);
+    _controlQueuePtr = mainControlQueue;
+    _poolPtr = pool;
+    //_motor = new MotorController(this);
+    //_servo = new ServoController(this);
+    //_boost = new BoostController(this);
 }
 
 RCManager::~RCManager()
@@ -34,4 +37,14 @@ void RCManager::applyUpdate(double angle, double throttle)
 {
     _motor->setThrottle(throttle);
     _servo->setSteering(angle);
+}
+
+void RCManager::updateSteering(double angle)
+{
+//safequeue.safeenqueue(angle)
+}
+
+void RCManager::updateThrottle(double throttle)
+{
+
 }
