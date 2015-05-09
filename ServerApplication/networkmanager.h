@@ -2,12 +2,13 @@
 #define NETWORKMANAGER_H
 
 #include <QObject>
+#include <QBuffer>
 #include <QTcpSocket>
 #include <QTcpServer>
-#include <QBuffer>
+#include <QUdpSocket>
 #include <QThreadPool>
-#include "packetmanager.h"
 #include "rcmanager.h"
+#include "packetmanager.h"
 //#include "cameracontroller.h"
 
 class NetworkManager : public QObject
@@ -29,11 +30,19 @@ signals:
     void sendBytesToMessageLog(QString message);
     void startDriving();
     void stopDriving();
-    void updateRC(double steeringAngle, double throttle);//add boost later
+    //void updateRC(double steeringAngle, double throttle);//add boost later
+    //^?
+
 
 public slots:
     void newConnection();
     void readClientBytes();
+    void udpControlBytes();
+
+private slots:
+    //private control handler methods
+    void setupControlStream();
+    void endControlStream();
 
 private:
     //private members
@@ -41,6 +50,7 @@ private:
     RCManager * _rc;
     QTcpServer * _server;
     QTcpSocket * _clientSocket;
+    QUdpSocket * _controlSocket;
     QThreadPool * _poolInstance;
     PacketManager * _packetManager;
 
@@ -48,6 +58,7 @@ private:
     void driveModeSet(int state);
     bool checkBytesForExit(QByteArray bytes);
     bool checkMessageForExit(QString message);
+
 
 };
 

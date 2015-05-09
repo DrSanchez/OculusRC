@@ -20,14 +20,18 @@ class MotorController : public QObject, public QRunnable
     const long MAX_DUTY_VALUE_NS = 30000;
 
 public:
-    explicit MotorController(QQueue<QByteArray> * motorCommandQueue, QObject *parent = 0);
+    explicit MotorController(QObject *parent = 0);
     ~MotorController();
     void setThrottle(double value);
     void activate();
     void deactivate();
 
+    void enqueueValue(double value);
+
+    void updateRunning(bool val);
+
 protected:
-//    void run();
+    void run();
 
 signals:
 
@@ -36,7 +40,9 @@ public slots:
 private:
     //private members
     PWMController * _pwm;
-    QQueue<QByteArray> * _motorCommandQueue;
+    SafeQueue<double> * _motorCommands;
+
+    bool _running;
 
 };
 

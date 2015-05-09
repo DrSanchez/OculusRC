@@ -24,6 +24,13 @@ public:
     void activate();
     void deactivate();
 
+    void enqueueValue(double value);
+
+    void updateRunning(bool val);
+
+protected:
+    void run();
+
 signals:
 
 public slots:
@@ -32,6 +39,8 @@ private:
     //private members
     PWMController * _pwm;
     SafeQueue<double> * _steeringQueue;
+
+    bool _running;
 
 };
 

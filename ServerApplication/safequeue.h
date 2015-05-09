@@ -30,9 +30,9 @@ public:
 private:
     //private members
     QQueue<T> * _q;
+    QMutex * _lock;
     QSemaphore * _free;
     QSemaphore * _used;
-    QMutex * _lock;
 
 };
 

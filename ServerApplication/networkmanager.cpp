@@ -3,8 +3,8 @@
 
 NetworkManager::NetworkManager(QObject *parent)
     : QObject(parent), _server(nullptr), _clientSocket(nullptr),
-      _packetManager(nullptr), _rc(nullptr), _driveMode(false)//,
-      //_camManager(nullptr)
+      _packetManager(nullptr), _rc(nullptr), _driveMode(false),
+      _controlSocket(nullptr)//_camManager(nullptr)
 {
     //object allocation
     _server = new QTcpServer(this);
@@ -12,16 +12,18 @@ NetworkManager::NetworkManager(QObject *parent)
     //_mainControlQueue = new QQueue<QByteArray>();
     //grab global threadpool instance
     _poolInstance = QThreadPool::globalInstance();
-    //_rc = new RCManager(/*_mainControlQueue,*/ _poolInstance, this);
-
+    _rc = new RCManager(_poolInstance, this);
+    _rc->updateRunning(false);
 
     //tied newConnection handler to server signal
     connect(_server, &QTcpServer::newConnection, this, &NetworkManager::newConnection);
 
-    //connect rc signals
+    //connect driving signals
+    connect(this, &NetworkManager::startDriving, this, &NetworkManager::setupControlStream);
+    connect(this, &NetworkManager::stopDriving, this, &NetworkManager::endControlStream);
     connect(this, &NetworkManager::startDriving, _rc, &RCManager::InitializeRCSystem);
     connect(this, &NetworkManager::stopDriving, _rc, &RCManager::DeactivateRCSystem);
-    connect(this, &NetworkManager::updateRC, _rc, &RCManager::applyUpdate);
+    //connect(this, &NetworkManager::updateRC, _rc, &RCManager::applyUpdate);
 
     //start server listening
     if (!_server->listen(QHostAddress::Any, 9999))
@@ -87,12 +89,12 @@ void NetworkManager::readClientBytes()
             //check drive mode
             driveModeSet(packet->_state);
 
-            if (_driveMode)
-            {
-                if (packet->_forward == false)
-                    packet->_throttle = -(packet->_throttle);
-                emit updateRC(packet->_steeringAngle, packet->_throttle);//add boost later
-            }
+//            if (_driveMode)
+//            {
+//                if (packet->_forward == false)
+//                    packet->_throttle = -(packet->_throttle);
+//                emit updateRC(packet->_steeringAngle, packet->_throttle);//add boost later
+//            }
 
             //close server if bytes contain exit bytes
             if(checkMessageForExit(packet->_message))
@@ -184,6 +186,59 @@ void NetworkManager::sendCurrentPacket()
         _clientSocket->waitForBytesWritten();
         _clientSocket->flush();
         _packetManager->clearMessage();
+    }
+}
+
+void NetworkManager::setupControlStream()
+{
+    if (_controlSocket == nullptr)
+    {
+        _controlSocket = new QUdpSocket(this);
+        if (!_controlSocket->bind(_clientSocket->peerAddress(), 1234))
+        {
+            qDebug() << "Could not bind to udp socket using tcp client address...\n";
+        }
+        _rc->updateRunning(true);
+        _poolInstance->start(_rc);
+        connect(_controlSocket, &QUdpSocket::readyRead, this, &NetworkManager::udpControlBytes);
+    }
+    else //don't expect this case to occur
+    {//_controlSocket should be cleaned on stopDriving
+        if (_controlSocket->isOpen())
+            _controlSocket->close();
+        delete _controlSocket;
+        _controlSocket = nullptr;
+    }
+}
+
+void NetworkManager::endControlStream()
+{
+    if (_controlSocket != nullptr)
+    {
+        if (_controlSocket->isOpen())
+            _controlSocket->close();
+        delete _controlSocket;
+        _controlSocket = nullptr;
+    }
+    else //don't expect this case to occur
+    {//_controlSocket should never be nullptr in this method
+    //nothing to be done
+    }
+}
+
+void NetworkManager::udpControlBytes()
+{
+    QByteArray buffer;
+    buffer.resize(_controlSocket->pendingDatagramSize());
+    if (buffer.size() != 2)
+    {
+        qDebug() << "Unexpected number of bytes in datagram...\n";
+        //fix it?
+    }
+    else
+    {
+        _controlSocket->readDatagram(buffer.data(), buffer.size());
+        _rc->enqueueControl(&buffer);
     }
 }
 

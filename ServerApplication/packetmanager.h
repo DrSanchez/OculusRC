@@ -1,10 +1,10 @@
 #ifndef PACKETMANAGER_H
 #define PACKETMANAGER_H
 
-#include <QObject>
-#include <QByteArray>
-#include <QString>
 #include <QList>
+#include <QObject>
+#include <QString>
+#include <QByteArray>
 
 const static char SERVER_TAG = '@';
 const static char CLIENT_TAG = '$';

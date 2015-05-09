@@ -8,6 +8,7 @@ ServoController::ServoController(QObject *parent)
     _pwm->setPeriod(SERVO_PERIOD_NS);
     _pwm->setDutyCycle(SERVO_NEUTRAL_DUTY_NS);
     _pwm->setPolarity(NORMAL);
+    _running = false;
 }
 
 ServoController::~ServoController()
@@ -35,4 +36,26 @@ void ServoController::deactivate()
 {
     _pwm->closeDuty();
     _pwm->setEnable(false);
+}
+
+void ServoController::enqueueValue(double value)
+{
+    _steeringQueue->safeEnqueue(&value);
+}
+
+void ServoController::updateRunning(bool val)
+{
+    if (val)
+        this->activate();
+    else
+        this->deactivate();
+    _running = val;
+}
+
+void ServoController::run()
+{
+    while (_running)
+    {
+        this->setSteering(_steeringQueue->safeDequeue());
+    }
 }
