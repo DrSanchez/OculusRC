@@ -9,13 +9,18 @@
  *********************************************/
 
 #include <QTcpSocket>
+#include <QUdpSocket>
 #include "packetmanager.h"
 #include "steeringwheelcontroller.h"
 
 //Default Jetson Home IP: 192.168.2.4
-const QString _jetsonIP = "192.168.2.4";
+const QString _jetsonIP = "192.168.2.5";
+//const QString _jetsonIP = "10.103.2.188";
 //Default Jetson Server Port: 9999
 const int _jetsonPort = 9999;
+
+const static char SERVO_TAG = '%';
+const static char MOTOR_TAG = '^';
 
 class ClientNetworkManager : public QObject
 {
@@ -58,15 +63,21 @@ public slots:
     void disconnected();
     void bytesWritten(qint64 bytes);
     void readyRead();
-    void handleNewControlData();
+    void updateDriveMode();
+    void updateControlData(double steeringValue, double throttle);
 
 private:
     //private methods
     void jetsonConnected(bool connect);
     void writeToSocket(QString message);
 
+    //private control stream methods
+    void initUdpStream();
+    void killUdpStream();
+
     //private data members
     QTcpSocket * _socket;
+    QUdpSocket * _controlSocket;
     bool _connected;
     PacketManager * _packetizer;
     SteeringWheelController * _controller;

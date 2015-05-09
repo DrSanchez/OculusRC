@@ -46,6 +46,8 @@ signals:
     void driveModeChanged();
     void remoteControlData(double steeringValue, double throttle, bool direction, bool boost);
 
+    void new_remoteControlData(double steeringValue, double throttle);
+
 public slots:
     //public controller methods
     void startPolling(unsigned int timerInterval);

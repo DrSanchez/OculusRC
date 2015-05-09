@@ -3,13 +3,13 @@
 
 ClientNetworkManager::ClientNetworkManager(SteeringWheelController * controller, QObject *parent)
     : QObject(parent), _socket(nullptr), _connected(false),
-      _packetizer(nullptr), _controller(controller)
+      _packetizer(nullptr), _controller(controller), _controlSocket(nullptr)
 {
     _packetizer = new PacketManager(this);
-    connect(_controller, &SteeringWheelController::remoteControlData,
-            _packetizer, &PacketManager::updateControlData);
-    connect(_packetizer, &PacketManager::packetChanged,
-            this, &ClientNetworkManager::handleNewControlData);
+    connect(_controller, &SteeringWheelController::new_remoteControlData,
+            this, &ClientNetworkManager::updateControlData);
+    connect(_controller, &SteeringWheelController::driveModeChanged,
+           this, &ClientNetworkManager::updateDriveMode);
 }
 
 void ClientNetworkManager::connectToJetson()
@@ -129,9 +129,66 @@ void ClientNetworkManager::sendCurrentPacket()
     }
 }
 
-void ClientNetworkManager::handleNewControlData()
+void ClientNetworkManager::updateDriveMode()
 {
-    sendCurrentPacket();
+    if (_controller->driveMode())
+    {
+        _packetizer->setState(1);
+        sendCurrentPacket();
+        initUdpStream();
+    }
+    else
+    {
+        _packetizer->setState(0);
+        sendCurrentPacket();
+        killUdpStream();
+    }
+}
+
+void ClientNetworkManager::initUdpStream()
+{
+    if (_controlSocket == nullptr)
+    {
+        _controlSocket = new QUdpSocket(this);
+    }
+    else
+    {
+        //should not reach this point
+    }
+}
+
+void ClientNetworkManager::killUdpStream()
+{
+    if (_controlSocket != nullptr)
+    {
+        delete _controlSocket;
+        _controlSocket = nullptr;
+    }
+    else
+    {
+        //should not reach this point
+    }
+}
+
+void ClientNetworkManager::updateControlData(double steeringValue, double throttle)
+{
+    QByteArray datagram;
+    datagram.append(SERVO_TAG);
+    datagram.append(BYTE_SPLIT);
+    datagram.append(QString::number(steeringValue));
+    qDebug() << datagram;
+    _controlSocket->writeDatagram(datagram.data(), datagram.size(),
+                                  QHostAddress::Broadcast, 45454);
+    _controlSocket->flush();
+    datagram.clear();
+    datagram.append(MOTOR_TAG);
+    datagram.append(BYTE_SPLIT);
+    datagram.append(QString::number(throttle));
+    qDebug() << datagram;
+    qDebug() << "DG Size: " << datagram.size();
+    _controlSocket->writeDatagram(datagram.data(), datagram.size(),
+                                  QHostAddress::Broadcast, 45454);
+    _controlSocket->flush();
 }
 
 QString ClientNetworkManager::jetsonIP()

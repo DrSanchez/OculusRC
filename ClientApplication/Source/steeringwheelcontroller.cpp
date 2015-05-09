@@ -154,7 +154,7 @@ void SteeringWheelController::update()
         if (!XInputControlState::batteryEquals(*_previousState, *_currentState))
             emit newControllerBatteryState(_currentState->_batteryState, _currentState->_batteryLevel);
 
-        if (controlsChanged() && _driveMode)
+        if (_driveMode)
             sendRemoteControlData();
 
         _previousState->operator =(*_currentState);//force overloaded operator usage
@@ -236,7 +236,7 @@ void SteeringWheelController::sendRemoteControlData()
         if (_currentState->_leftTrigger > _currentState->_rightTrigger)
         {
             forward = false;
-            throttleValue = _currentState->_leftTrigger;
+            throttleValue = -(_currentState->_leftTrigger);
         }
         else if (_currentState->_rightTrigger > _currentState->_leftTrigger)
         {
@@ -251,7 +251,7 @@ void SteeringWheelController::sendRemoteControlData()
     }
     else if (_currentState->_leftTrigger > 0 && _currentState->_rightTrigger == 0)
     {//reverse trigger/pedal
-        throttleValue = _currentState->_leftTrigger;
+        throttleValue = -(_currentState->_leftTrigger);
         forward = false;
     }
     else if (_currentState->_rightTrigger > 0 && _currentState->_leftTrigger == 0)
@@ -260,7 +260,8 @@ void SteeringWheelController::sendRemoteControlData()
         forward = true;
     }
     steeringAngleValue = _currentState->_leftThumbX;
-    emit remoteControlData(steeringAngleValue, throttleValue, forward, _currentState->buttonA() == 0 ? true : false);
+    emit new_remoteControlData(steeringAngleValue, throttleValue);
+    //emit remoteControlData(steeringAngleValue, throttleValue, forward, _currentState->buttonA() == 0 ? true : false);
 }
 
 bool SteeringWheelController::controlsChanged()

@@ -25,8 +25,8 @@ FocusScope
         visible: true
         minimumHeight: 480
         minimumWidth: minimumHeight * 1.4
-        width: ScreenWidth * 0.88
-        height: ScreenHeight * 0.88
+        width: ScreenWidth * 0.66
+        height: ScreenHeight * 0.66
         visibility:
         {
             if (ShowFullscreen)
