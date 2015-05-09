@@ -1,6 +1,8 @@
 #include "rcmanager.h"
 #include <QDebug>
 
+const static char BYTE_SPLIT = '|';
+
 RCManager::RCManager(QThreadPool * pool, QObject *parent)
     : QObject(parent), _motor(nullptr), _servo(nullptr),
       /*_boost(nullptr),*/_poolPtr(nullptr), _controlQueue(nullptr)
@@ -27,7 +29,9 @@ void RCManager::InitializeRCSystem()
     _servo->activate();
     _motor->updateRunning(true);
     _servo->updateRunning(true);
+    qDebug() << "Starting motor...\n";
     _poolPtr->start(_motor);
+    qDebug() << "Starting servo...\n";
     _poolPtr->start(_servo);
 }
 
@@ -69,25 +73,26 @@ void RCManager::updateRunning(bool value)
 void RCManager::run()
 {
     QByteArray temp;
-    QString intermediate;
-    double tempVal;
+    QList<QByteArray> splitter;
+    char flag;
+    qDebug() << "RC::run init...\n" << "Running: " << _running << '\n';
     while (_running)
     {
-        //temp is guaranteed to be of size 2
-        if (!_controlQueue->isEmpty())
+        qDebug() << "RC::run...\n";
+        if (!_controlQueue->safeIsEmpty())
         {
             temp = _controlQueue->safeDequeue();
-            if (temp[0] == SERVO_TAG)
+            splitter = temp.split(BYTE_SPLIT);
+            flag = splitter.takeFirst().toInt();
+            if (flag == SERVO_TAG)
             {
-                intermediate = temp[1];
-                tempVal = intermediate.toDouble();
-                _servo->enqueueValue(tempVal);
+                temp = splitter.takeFirst();
+                _servo->enqueueValue(temp.toDouble());
             }
-            else if (temp[1] == MOTOR_TAG)
+            else if (flag == MOTOR_TAG)
             {
-                intermediate = temp[1];
-                tempVal = intermediate.toDouble();
-                _motor->enqueueValue(tempVal);
+                temp = splitter.takeFirst();
+                _motor->enqueueValue(temp.toDouble());
             }
             else
             {
@@ -95,4 +100,12 @@ void RCManager::run()
             }
         }
     }
+}
+
+void RCManager::ensureShutdown()
+{
+    _running = false;
+    _motor->updateRunning(false);
+    _servo->updateRunning(false);
+    DeactivateRCSystem();
 }

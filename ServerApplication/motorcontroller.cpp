@@ -1,8 +1,8 @@
 #include "motorcontroller.h"
-#include <math.h>
+#include <QDebug>
 
-MotorController::MotorController(QObject *parent) :
-    QObject(parent), _pwm(nullptr)
+MotorController::MotorController(QObject *parent)
+    : QObject(parent), _pwm(nullptr), _motorCommands(nullptr)
 {
     _pwm = new PWMController(0,this);
     _pwm->exportPwm();
@@ -42,7 +42,8 @@ void MotorController::deactivate()
 
 void MotorController::enqueueValue(double value)
 {
-    _motorCommands->safeEnqueue(&value);
+    double temp = value;
+    _motorCommands->safeEnqueue(&temp);
 }
 
 void MotorController::updateRunning(bool val)
@@ -58,6 +59,7 @@ void MotorController::run()
 {
     while (_running)
     {
+        qDebug() << "Motor::run...\n";
         this->setThrottle(_motorCommands->safeDequeue());
     }
 }

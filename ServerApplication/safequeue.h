@@ -21,8 +21,8 @@ public:
     const T safeHead() const;
     int safeSize() const;
     int safeCount() const;
-    bool isEmpty() const;
-    bool isFull() const;
+    bool safeIsEmpty() const;
+    bool safeIsFull() const;
 
     //queue reference
     SafeQueue * getQueuePtr();
@@ -42,7 +42,7 @@ SafeQueue<T>::SafeQueue()
       _used(nullptr), _lock(nullptr)
 {
     _free = new QSemaphore(SEMAPHORE_MAX);
-    _used = new QSemaphore(SEMAPHORE_MAX);
+    _used = new QSemaphore(0);
     _lock = new QMutex();
     _q = new QQueue<T>();
 }
@@ -51,8 +51,9 @@ template <class T>
 void SafeQueue<T>::safeEnqueue(T * data)
 {
     _free->acquire(1);
-    QMutexLocker locker(_lock);
+    _lock->lock();
     _q->enqueue(*data);
+    _lock->unlock();
     _used->release(1);
 }
 
@@ -60,8 +61,9 @@ template <class T>
 T SafeQueue<T>::safeDequeue()
 {
     _used->acquire(1);
-    QMutexLocker locker(_lock);
+    _lock->lock();
     T value = _q->dequeue();
+    _lock->unlock();
     _free->release(1);
     return value;
 }
@@ -70,8 +72,9 @@ template <class T>
 T SafeQueue<T>::safeHead()
 {
     _used->acquire(1);
-    QMutexLocker locker(_lock);
+    _lock->lock();
     T value = _q->head();
+    _lock->unlock();
     _used->release(1);
     return value;
 }
@@ -80,8 +83,9 @@ template <class T>
 const T SafeQueue<T>::safeHead() const
 {
     _used->acquire(1);
-    QMutexLocker locker(_lock);
+    _lock->lock();
     const T value = _q->head();
+    _lock->unlock();
     _used->release(1);
     return value;
 }
@@ -96,8 +100,9 @@ template <class T>
 int SafeQueue<T>::safeSize() const
 {
     _used->acquire(1);
-    QMutexLocker locker(_lock);
+    _lock->lock();
     int value = _q->size();
+    _lock->unlock();
     _used->release(1);
     return value;
 }
@@ -105,21 +110,17 @@ int SafeQueue<T>::safeSize() const
 template <class T>
 int SafeQueue<T>::safeCount() const
 {
-    _used->acquire(1);
-    QMutexLocker locker(_lock);
-    int value = _q->count();
-    _used->release(1);
-    return value;
+    return _used->available();
 }
 
 template <class T>
-bool SafeQueue<T>::isEmpty() const
+bool SafeQueue<T>::safeIsEmpty() const
 {
     return _used->available() == 0;
 }
 
 template <class T>
-bool SafeQueue<T>::isFull() const
+bool SafeQueue<T>::safeIsFull() const
 {
     return _free->available() == 0;
 }

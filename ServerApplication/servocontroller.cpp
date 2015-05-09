@@ -1,13 +1,15 @@
 #include "servocontroller.h"
+#include <QDebug>
 
 ServoController::ServoController(QObject *parent)
-    : QObject(parent), _pwm(nullptr)
+    : QObject(parent), _pwm(nullptr), _steeringQueue(nullptr)
 {
     _pwm = new PWMController(2, this);
     _pwm->exportPwm();
     _pwm->setPeriod(SERVO_PERIOD_NS);
     _pwm->setDutyCycle(SERVO_NEUTRAL_DUTY_NS);
     _pwm->setPolarity(NORMAL);
+    _steeringQueue = new SafeQueue<double>();
     _running = false;
 }
 
@@ -40,7 +42,8 @@ void ServoController::deactivate()
 
 void ServoController::enqueueValue(double value)
 {
-    _steeringQueue->safeEnqueue(&value);
+    double temp = value;
+    _steeringQueue->safeEnqueue(&temp);
 }
 
 void ServoController::updateRunning(bool val)
@@ -56,6 +59,7 @@ void ServoController::run()
 {
     while (_running)
     {
+        qDebug() << "Servo::run...\n";
         this->setSteering(_steeringQueue->safeDequeue());
     }
 }

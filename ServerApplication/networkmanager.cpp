@@ -9,7 +9,7 @@ NetworkManager::NetworkManager(QObject *parent)
     //object allocation
     _server = new QTcpServer(this);
     _packetManager = new PacketManager(this);
-    //_mainControlQueue = new QQueue<QByteArray>();
+
     //grab global threadpool instance
     _poolInstance = QThreadPool::globalInstance();
     _rc = new RCManager(_poolInstance, this);
@@ -40,8 +40,8 @@ NetworkManager::NetworkManager(QObject *parent)
 
 void NetworkManager::customDestroy()
 {
-    //gonna need something along these lines
-    //threadPool.waitfordone();
+    _rc->ensureShutdown();
+    _poolInstance->waitForDone();
 
 
  //   _camManager->stop();
@@ -140,7 +140,11 @@ bool NetworkManager::checkMessageForExit(QString message)
 {
     //check for exit bytes
     if (message.contains("exit"))
+    {
+        if (_driveMode)
+            _driveMode = false;
         return true;
+    }
     return false;
 }
 
@@ -151,11 +155,11 @@ void NetworkManager::driveModeSet(int state)
         currentDriveValue = false;
     else if (state == 1)
         currentDriveValue = true;
-    qDebug() << state;
     //stored value for drive mode is the previous
     if (_driveMode != currentDriveValue)
     {
         _driveMode = currentDriveValue;
+        qDebug() << "Driving = " << state << '\n';
         if (currentDriveValue)
             emit startDriving();
         else
@@ -193,14 +197,16 @@ void NetworkManager::setupControlStream()
 {
     if (_controlSocket == nullptr)
     {
+        qDebug() << "Creating udp socket...\n";
         _controlSocket = new QUdpSocket(this);
-        if (!_controlSocket->bind(_clientSocket->peerAddress(), 1234))
+        if (!_controlSocket->bind(45454, QUdpSocket::ShareAddress))
         {
             qDebug() << "Could not bind to udp socket using tcp client address...\n";
         }
+        qDebug() << "Starting rc....\n";
+        connect(_controlSocket, &QUdpSocket::readyRead, this, &NetworkManager::udpControlBytes);
         _rc->updateRunning(true);
         _poolInstance->start(_rc);
-        connect(_controlSocket, &QUdpSocket::readyRead, this, &NetworkManager::udpControlBytes);
     }
     else //don't expect this case to occur
     {//_controlSocket should be cleaned on stopDriving
@@ -230,16 +236,11 @@ void NetworkManager::udpControlBytes()
 {
     QByteArray buffer;
     buffer.resize(_controlSocket->pendingDatagramSize());
-    if (buffer.size() != 2)
-    {
-        qDebug() << "Unexpected number of bytes in datagram...\n";
-        //fix it?
-    }
-    else
-    {
-        _controlSocket->readDatagram(buffer.data(), buffer.size());
-        _rc->enqueueControl(&buffer);
-    }
+    qDebug() << "Reading datagram...\n";
+
+    _controlSocket->readDatagram(buffer.data(), buffer.size());
+    qDebug() << buffer;
+    _rc->enqueueControl(&buffer);
 }
 
 NetworkManager::~NetworkManager()

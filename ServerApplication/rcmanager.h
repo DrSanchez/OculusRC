@@ -1,6 +1,7 @@
 #ifndef RCMANAGER_H
 #define RCMANAGER_H
 
+#include <QList>
 #include <QObject>
 #include <QRunnable>
 #include <QThreadPool>
@@ -21,7 +22,7 @@ public:
     ~RCManager();
 
     void enqueueControl(QByteArray * bytes);
-
+    void ensureShutdown();
     void updateRunning(bool value);
 
 protected:
