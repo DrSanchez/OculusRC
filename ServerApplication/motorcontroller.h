@@ -16,7 +16,7 @@ class MotorController : public QObject, public QRunnable
     /* is far too powerful, cutting back maximum power  */
     /* Actual MAX = 50000; use when mechanically stable */
     /* Then we can use the booster module               */
-    const long MAX_DUTY_VALUE_NS = 30000;
+    const long MAX_DUTY_VALUE_NS = 150000;
 
 public:
     explicit MotorController(QObject *parent = 0);

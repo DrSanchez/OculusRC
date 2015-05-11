@@ -14,7 +14,7 @@ class ServoController : public QObject, public QRunnable
 
     /* Prevent overdriving of the servo hardware         */
     /* Actual MAX = 50000; keep for future use, possibly */
-    const long MAX_DUTY_VALUE_NS = 40000;
+    const long MAX_DUTY_VALUE_NS = 350000;
 
 public:
     explicit ServoController(QObject *parent = 0);

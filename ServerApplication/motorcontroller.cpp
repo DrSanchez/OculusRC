@@ -10,9 +10,9 @@ MotorController::MotorController(QObject *parent)
     _pwm->setPeriod(MOTOR_PERIOD_NS);
 
     //set neutral duty
-    _pwm->openDuty();
+    //_pwm->openDuty();
     _pwm->setDutyCycle(MOTOR_NEUTRAL_DUTY_NS);
-    _pwm->closeDuty();
+   // _pwm->closeDuty();
 
     _pwm->setPolarity(NORMAL);
     _motorCommands = new SafeQueue<double>();
@@ -38,13 +38,13 @@ void MotorController::activate()
 {
     this->_running = true;
     _pwm->setEnable(true);
-    _pwm->openDuty();
+    //_pwm->openDuty();
 }
 
 void MotorController::deactivate()
 {
     this->_running = false;
-    _pwm->closeDuty();
+    //_pwm->closeDuty();
     _pwm->setEnable(false);
 }
 
@@ -66,5 +66,6 @@ void MotorController::run()
     {
         value = _motorCommands->safeDequeue();
         this->setThrottle(value);
+        //QThread::msleep(1);
     }
 }
