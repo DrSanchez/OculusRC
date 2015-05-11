@@ -51,7 +51,6 @@ private:
     QTcpServer * _server;
     QTcpSocket * _clientSocket;
     QUdpSocket * _controlSocket;
-    QThreadPool * _poolInstance;
     PacketManager * _packetManager;
 
     //private methods

@@ -6,7 +6,7 @@
 #include <QSemaphore>
 #include <QMutexLocker>
 
-#define SEMAPHORE_MAX 32
+#define SEMAPHORE_MAX 64
 
 template <class T>
 class SafeQueue

@@ -10,9 +10,7 @@ NetworkManager::NetworkManager(QObject *parent)
     _server = new QTcpServer(this);
     _packetManager = new PacketManager(this);
 
-    //grab global threadpool instance
-    _poolInstance = QThreadPool::globalInstance();
-    _rc = new RCManager(_poolInstance, this);
+    _rc = new RCManager(this);
     _rc->updateRunning(false);
 
     //tied newConnection handler to server signal
@@ -21,9 +19,6 @@ NetworkManager::NetworkManager(QObject *parent)
     //connect driving signals
     connect(this, &NetworkManager::startDriving, this, &NetworkManager::setupControlStream);
     connect(this, &NetworkManager::stopDriving, this, &NetworkManager::endControlStream);
-    connect(this, &NetworkManager::startDriving, _rc, &RCManager::InitializeRCSystem);
-    connect(this, &NetworkManager::stopDriving, _rc, &RCManager::DeactivateRCSystem);
-    //connect(this, &NetworkManager::updateRC, _rc, &RCManager::applyUpdate);
 
     //start server listening
     if (!_server->listen(QHostAddress::Any, 9999))
@@ -41,7 +36,7 @@ NetworkManager::NetworkManager(QObject *parent)
 void NetworkManager::customDestroy()
 {
     _rc->ensureShutdown();
-    _poolInstance->waitForDone();
+    QThreadPool::globalInstance()->waitForDone();
 
 
  //   _camManager->stop();
@@ -88,13 +83,6 @@ void NetworkManager::readClientBytes()
 
             //check drive mode
             driveModeSet(packet->_state);
-
-//            if (_driveMode)
-//            {
-//                if (packet->_forward == false)
-//                    packet->_throttle = -(packet->_throttle);
-//                emit updateRC(packet->_steeringAngle, packet->_throttle);//add boost later
-//            }
 
             //close server if bytes contain exit bytes
             if(checkMessageForExit(packet->_message))
@@ -159,7 +147,6 @@ void NetworkManager::driveModeSet(int state)
     if (_driveMode != currentDriveValue)
     {
         _driveMode = currentDriveValue;
-        qDebug() << "Driving = " << state << '\n';
         if (currentDriveValue)
             emit startDriving();
         else
@@ -206,7 +193,8 @@ void NetworkManager::setupControlStream()
         qDebug() << "Starting rc....\n";
         connect(_controlSocket, &QUdpSocket::readyRead, this, &NetworkManager::udpControlBytes);
         _rc->updateRunning(true);
-        _poolInstance->start(_rc);
+        QThreadPool::globalInstance()->setMaxThreadCount(4);
+        QThreadPool::globalInstance()->start(_rc, QThread::HighPriority);
     }
     else //don't expect this case to occur
     {//_controlSocket should be cleaned on stopDriving
@@ -236,10 +224,7 @@ void NetworkManager::udpControlBytes()
 {
     QByteArray buffer;
     buffer.resize(_controlSocket->pendingDatagramSize());
-    qDebug() << "Reading datagram...\n";
-
     _controlSocket->readDatagram(buffer.data(), buffer.size());
-    qDebug() << buffer;
     _rc->enqueueControl(&buffer);
 }
 

@@ -6,7 +6,6 @@
 #include "safequeue.h"
 #include "pwmcontroller.h"
 
-//inherit qrunnable, not qobject
 class MotorController : public QObject, public QRunnable
 {
     Q_OBJECT

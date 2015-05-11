@@ -6,7 +6,6 @@
 #include "safequeue.h"
 #include "pwmcontroller.h"
 
-
 class ServoController : public QObject, public QRunnable
 {
     Q_OBJECT

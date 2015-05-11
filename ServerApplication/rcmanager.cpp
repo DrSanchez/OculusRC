@@ -3,12 +3,11 @@
 
 const static char BYTE_SPLIT = '|';
 
-RCManager::RCManager(QThreadPool * pool, QObject *parent)
+RCManager::RCManager(QObject *parent)
     : QObject(parent), _motor(nullptr), _servo(nullptr),
-      /*_boost(nullptr),*/_poolPtr(nullptr), _controlQueue(nullptr)
+      /*_boost(nullptr),*/_controlQueue(nullptr)
 {
     _controlQueue = new SafeQueue<QByteArray>();
-    _poolPtr = pool;
     _motor = new MotorController(this);
     _servo = new ServoController(this);
     //_boost = new BoostController(this);
@@ -29,10 +28,8 @@ void RCManager::InitializeRCSystem()
     _servo->activate();
     _motor->updateRunning(true);
     _servo->updateRunning(true);
-    qDebug() << "Starting motor...\n";
-    _poolPtr->start(_motor);
-    qDebug() << "Starting servo...\n";
-    _poolPtr->start(_servo);
+   QThreadPool::globalInstance()->start(_motor, QThread::HighPriority);
+   QThreadPool::globalInstance()->start(_servo, QThread::HighPriority);
 }
 
 void RCManager::DeactivateRCSystem()
@@ -43,22 +40,6 @@ void RCManager::DeactivateRCSystem()
     _motor->deactivate();
     _servo->deactivate();
 }
-
-//void RCManager::applyUpdate(double angle, double throttle)
-//{
-//    _motor->setThrottle(throttle);
-//    _servo->setSteering(angle);
-//}
-
-//void RCManager::updateSteering(double angle)
-//{
-
-//}
-
-//void RCManager::updateThrottle(double throttle)
-//{
-
-//}
 
 void RCManager::enqueueControl(QByteArray *bytes)
 {
@@ -75,15 +56,16 @@ void RCManager::run()
     QByteArray temp;
     QList<QByteArray> splitter;
     char flag;
-    qDebug() << "RC::run init...\n" << "Running: " << _running << '\n';
+
+    InitializeRCSystem();
+
     while (_running)
     {
-        qDebug() << "RC::run...\n";
         if (!_controlQueue->safeIsEmpty())
         {
             temp = _controlQueue->safeDequeue();
             splitter = temp.split(BYTE_SPLIT);
-            flag = splitter.takeFirst().toInt();
+            flag = (splitter.takeFirst())[0];
             if (flag == SERVO_TAG)
             {
                 temp = splitter.takeFirst();
@@ -96,10 +78,12 @@ void RCManager::run()
             }
             else
             {
-                qDebug() << "Error, should not reach this point...\n";
+                qDebug() << "Error, rc thread should not reach this point...\n";
             }
         }
     }
+
+    DeactivateRCSystem();
 }
 
 void RCManager::ensureShutdown()
@@ -107,5 +91,4 @@ void RCManager::ensureShutdown()
     _running = false;
     _motor->updateRunning(false);
     _servo->updateRunning(false);
-    DeactivateRCSystem();
 }
